@@ -1,10 +1,21 @@
 @import url(fontawesome-all.min.css);
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,700");
-/*
-	Projeto Contingenciamento
-	Departamento de TI - Sistemas | ISCMC
-	Este arquivo de scripts faz parte do sistema de contingenciamento Tasy off grid
-*/
+
+/**
+ * Servidor de contingência ISCMC Off frid
+ *
+ * Este arquivo faz parte do framework MVC Projeto Contingenciamento.
+ *
+ * @category Framework
+ * @package  Servidor de contingência ISCMC
+ * @author   Sergio Figueroa <sergio.figueroa@iscmc.com.br>
+ * @license  MIT, Apache
+ * @link     http://10.132.16.43/ISCMC
+ * @version  1.0.0
+ * @since    2025-04-01
+ * @maindev  Sergio Figueroa
+ */
+
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
 	margin: 0;
 	padding: 0;

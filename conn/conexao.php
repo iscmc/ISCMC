@@ -14,12 +14,21 @@
  * @maindev  Sergio Figueroa
  */
 
-class Database {
+ class Database {
     private $conn;
 
-    public function connect($host, $username, $password, $service_name) {
+    public function connect($host, $username, $password, $service_name = null, $sid = null) {
         try {
-            $this->conn = oci_connect($username, $password, "$host/$service_name");
+            // Determina a string de conexão com base em service_name ou sid
+            if ($service_name) {
+                $connection_string = "$host/$service_name";
+            } elseif ($sid) {
+                $connection_string = "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=$host)(PORT=1521))(CONNECT_DATA=(SID=$sid)))";
+            } else {
+                throw new Exception("Service name ou SID deve ser fornecido.");
+            }
+
+            $this->conn = oci_connect($username, $password, $connection_string);
             if (!$this->conn) {
                 $e = oci_error();
                 throw new Exception("Erro de conexão: " . $e['message']);
@@ -41,16 +50,16 @@ class Database {
 // Configuração inicial do backend
 $config = [
     'cloud' => [
-        'host' => 'oracle-cloud-host',
-        'username' => 'cloud_user',
-        'password' => 'cloud_pass',
-        'service_name' => 'tasy_emr_service'
+        'host' => '10.250.250.214',
+        'username' => 'tasy',
+        'password' => 'XTXYJWIKZF',
+        'service_name' => 'dbhomol.tasy'
     ],
     'local' => [
         'host' => 'localhost',
-        'username' 'local_user',
-        'password' => 'local_pass',
-        'service_name' => 'xe'
+        'username' => 'SYSTEM',
+        'password' => 'K@t7y317',
+        'sid' => 'xe'
     ]
 ];
 
@@ -69,6 +78,7 @@ $local_conn = $local_db->connect(
     $config['local']['host'],
     $config['local']['username'],
     $config['local']['password'],
-    $config['local']['service_name']
+    null,
+    $config['local']['sid']
 );
 ?>

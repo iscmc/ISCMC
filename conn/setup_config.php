@@ -40,14 +40,26 @@ if (oci_execute($stid)) {
     echo "Erro ao criar tabela: " . $e['message'];
 }
 
-// Inserir configuração inicial
+// gravar a configuração inicial
 $insert_sql = "
     INSERT INTO backup_config (
-        cloud_host, cloud_username, cloud_password, cloud_service,
-        local_host, local_username, local_password, local_service
-    ) VALUES (:cloud_host, :cloud_username, :cloud_password, :cloud_service,
-              :local_host, :local_username, :local_password, :local_service)
-";
+        cloud_host, 
+        cloud_username, 
+        cloud_password, 
+        cloud_service,
+        local_host, 
+        local_username, 
+        local_password, 
+        local_service
+    ) VALUES (:cloud_host, 
+              :cloud_username, 
+              :cloud_password, 
+              :cloud_service,
+              :local_host, 
+              :local_username, 
+              :local_password, 
+              :local_service
+    )";
 
 $stid = oci_parse($local_conn, $insert_sql);
 oci_bind_by_name($stid, ':cloud_host', $config['cloud']['host']);

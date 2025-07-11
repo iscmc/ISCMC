@@ -69,7 +69,7 @@ $cloud_conn = $cloud_db->connect(
     $config['cloud']['host'],
     $config['cloud']['username'],
     $config['cloud']['password'],
-    $config['cloud']['service_name']
+    $config['cloud']['service_name'],
 );
 
 // Conexão com Oracle XE Local

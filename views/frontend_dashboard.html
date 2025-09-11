@@ -1,9 +1,40 @@
+<?php
+// frontend_dashboard.php
+session_start();
+require_once 'controllers/AuthController.php';
+require_once 'controllers/BackupController.php';
+require_once 'controllers/MonitoringController.php';
+require_once 'controllers/ConfigController.php';
+
+// Verificar autenticação
+$authController = new AuthController();
+if (!$authController->isAuthenticated()) {
+    header('Location: login.php');
+    exit;
+}
+
+$backupController = new BackupController();
+$monitoringController = new MonitoringController();
+$configController = new ConfigController();
+
+// Obter dados para o dashboard
+$backupStatus = $backupController->getBackupStatus();
+$systemHealth = $monitoringController->getSystemHealth();
+$recentBackups = $backupController->getRecentBackups(10);
+$diskUsage = $monitoringController->getDiskUsage();
+$connectionStatus = $monitoringController->getConnectionStatus();
+$scheduleStatus = $backupController->getScheduleStatus();
+$userInfo = $authController->getCurrentUser();
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Backup Tasy EMR</title>
+    <title>Dashboard - Sistema de Backup e Contingenciamento</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,257 +49,337 @@
             color: #333;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-        }
-
-        .header h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .status-online {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-offline {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status-neutral {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .card h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            transform: translateY(0);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            overflow-y: auto;
             transition: transform 0.3s ease;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
-        .stat-number {
-            font-size: 2.5em;
-            font-weight: bold;
+        .sidebar-header h2 {
+            color: #667eea;
+            font-size: 18px;
             margin-bottom: 5px;
         }
 
-        .stat-label {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #219a52;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        .btn-warning {
-            background: #f39c12;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #e67e22;
-        }
-
-        .log-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background: #f8f9fa;
-        }
-
-        .log-entry {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            font-family: monospace;
+        .sidebar-header .user-info {
             font-size: 12px;
+            color: #666;
         }
 
-        .log-entry:last-child {
-            border-bottom: none;
+        .sidebar-menu {
+            padding: 20px 0;
         }
 
-        .log-success {
-            background: #d4edda;
-            color: #155724;
+        .sidebar-menu ul {
+            list-style: none;
         }
 
-        .log-error {
-            background: #f8d7da;
-            color: #721c24;
+        .sidebar-menu li {
+            margin-bottom: 5px;
         }
 
-        .log-info {
-            background: #d1ecf1;
-            color: #0c5460;
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header .breadcrumb {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .status-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-card.success {
+            border-left-color: #28a745;
+        }
+
+        .status-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .status-card.error {
+            border-left-color: #dc3545;
+        }
+
+        .status-card .icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .status-card.success .icon {
+            color: #28a745;
+        }
+
+        .status-card.warning .icon {
+            color: #ffc107;
+        }
+
+        .status-card.error .icon {
+            color: #dc3545;
+        }
+
+        .status-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .status-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .table-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-card h3 {
+            margin-bottom: 20px;
+            color: #333;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
         }
 
         .table th,
         .table td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .table th {
-            background: #f8f9fa;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
             font-weight: 600;
         }
 
-        .table tbody tr:hover {
-            background: #f8f9fa;
+        .table tr:hover {
+            background: rgba(0, 0, 0, 0.02);
         }
 
-        .config-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .status-indicator.success {
+            background: #28a745;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+        .status-indicator.warning {
+            background: #ffc107;
         }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        .status-indicator.error {
+            background: #dc3545;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-size: 14px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 8px;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #155724;
+            border-left-color: #28a745;
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #856404;
+            border-left-color: #ffc107;
+        }
+
+        .alert-error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
 
         .loading {
@@ -277,14 +388,8 @@
             color: #666;
         }
 
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+        .loading i {
             animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
         }
 
         @keyframes spin {
@@ -292,13 +397,304 @@
             100% { transform: rotate(360deg); }
         }
 
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            border: 1px solid transparent;
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .charts-container,
+            .tables-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Backup System</h2>
+            <div class="user-info">
+                <i class="fas fa-user"></i> <?php echo htmlspecialchars($userInfo['name']); ?>
+            </div>
+        </div>
+        <nav class="sidebar-menu">
+            <ul>
+                <li><a href="#" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" data-section="backups"><i class="fas fa-database"></i> Backups</a></li>
+                <li><a href="#" data-section="schedule"><i class="fas fa-clock"></i> Agendamentos</a></li>
+                <li><a href="#" data-section="monitoring"><i class="fas fa-chart-line"></i> Monitoramento</a></li>
+                <li><a href="#" data-section="logs"><i class="fas fa-list-alt"></i> Logs</a></li>
+                <li><a href="#" data-section="settings"><i class="fas fa-cogs"></i> Configurações</a></li>
+                <li><a href="#" data-section="contingency"><i class="fas fa-shield-alt"></i> Contingenciamento</a></li>
+                <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+            <div class="breadcrumb">
+                <span class="live-indicator"></span>
+                Sistema de Backup e Contingenciamento - Atualizado em tempo real
+            </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="status-cards">
+            <div class="status-card <?php echo $backupStatus['status'] === 'success' ? 'success' : ($backupStatus['status'] === 'warning' ? 'warning' : 'error'); ?>">
+                <div class="icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Status do Backup</h3>
+                <div class="value"><?php echo ucfirst($backupStatus['status']); ?></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: <?php echo $backupStatus['progress']; ?>%"></div>
+                </div>
+            </div>
+
+            <div class="status-card <?php echo $connectionStatus['oracle'] ? 'success' : 'error'; ?>">
+                <div class="icon">
+                    <i class="fas fa-plug"></i>
+                </div>
+                <h3>Conexão Oracle</h3>
+                <div class="value"><?php echo $connectionStatus['oracle'] ? 'Conectado' : 'Desconectado'; ?></div>
+            </div>
+
+            <div class="status-card <?php echo $systemHealth['status'] === 'healthy' ? 'success' : ($systemHealth['status'] === 'warning' ? 'warning' : 'error'); ?>">
+                <div class="icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h3>Status do Sistema</h3>
+                <div class="value"><?php echo ucfirst($systemHealth['status']); ?></div>
+            </div>
+
+            <div class="status-card <?php echo $diskUsage['percentage'] < 80 ? 'success' : ($diskUsage['percentage'] < 90 ? 'warning' : 'error'); ?>">
+                <div class="icon">
+                    <i class="fas fa-hdd"></i>
+                </div>
+                <h3>Uso do Disco</h3>
+                <div class="value"><?php echo $diskUsage['percentage']; ?>%</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: <?php echo $diskUsage['percentage']; ?>%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Container -->
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-line"></i> Histórico de Backups</h3>
+                <canvas id="backupChart" width="400" height="200"></canvas>
+            </div>
+            
+            <div class="chart-card">
+                <h3><i class="fas fa-pie-chart"></i> Distribuição de Tipos</h3>
+                <canvas id="typeChart" width="200" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Tables Container -->
+        <div class="tables-container">
+            <div class="table-card">
+                <h3><i class="fas fa-history"></i> Backups Recentes</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Tipo</th>
+                            <th>Status</th>
+                            <th>Tamanho</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($recentBackups as $backup): ?>
+                        <tr>
+                            <td><?php echo date('d/m/Y H:i', strtotime($backup['created_at'])); ?></td>
+                            <td><?php echo ucfirst($backup['type']); ?></td>
+                            <td>
+                                <span class="status-indicator <?php echo $backup['status']; ?>"></span>
+                                <?php echo ucfirst($backup['status']); ?>
+                            </td>
+                            <td><?php echo $backup['size_formatted']; ?></td>
+                            <td>
+                                <a href="#" class="btn btn-primary btn-sm" onclick="viewBackup(<?php echo $backup['id']; ?>)">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="btn btn-success btn-sm" onclick="downloadBackup(<?php echo $backup['id']; ?>)">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-card">
+                <h3><i class="fas fa-clock"></i> Próximos Agendamentos</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Agendamento</th>
+                            <th>Tipo</th>
+                            <th>Próxima Execução</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($scheduleStatus as $schedule): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($schedule['name']); ?></td>
+                            <td><?php echo ucfirst($schedule['type']); ?></td>
+                            <td><?php echo date('d/m/Y H:i', strtotime($schedule['next_run'])); ?></td>
+                            <td>
+                                <span class="status-indicator <?php echo $schedule['active'] ? 'success' : 'error'; ?>"></span>
+                                <?php echo $schedule['active'] ? 'Ativo' : 'Inativo'; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Inicializar gráficos
+        const backupCtx = document.getElementById('backupChart').getContext('2d');
+        const backupChart = new Chart(backupCtx, {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode($backupStatus['chart_labels']); ?>,
+                datasets: [{
+                    label: 'Backups por Dia',
+                    data: <?php echo json_encode($backupStatus['chart_data']); ?>,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const typeCtx = document.getElementById('typeChart').getContext('2d');
+        const typeChart = new Chart(typeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: <?php echo json_encode($backupStatus['type_labels']); ?>,
+                datasets: [{
+                    data: <?php echo json_encode($backupStatus['type_data']); ?>,
+                    backgroundColor: ['#667eea', '#764ba2', '#28a745', '#ffc107', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        // Funções de interação
+        function viewBackup(id) {
+            window.location.href = `backup_details.php?id=${id}`;
         }
 
-        .alert-success {
-            background: #d4edda;
-            border-color: #c3
+        function downloadBackup(id) {
+            window.location.href = `download_backup.php?id=${id}`;
+        }
+
+        // Atualização automática dos dados
+        setInterval(() => {
+            fetch('api/dashboard_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    updateDashboard(data);
+                })
+                .catch(error => {
+                    console.error('Erro ao atualizar dados:', error);
+                });
+        }, 30000); // Atualiza a cada 30 segundos
+
+        function updateDashboard(data) {
+            // Atualizar cards de status
+            document.querySelectorAll('.status-card').forEach(card => {
+                const progressBar = card.querySelector('.progress-fill');
+                if (progressBar && data.backup_progress) {
+                    progressBar.style.width = data.backup_progress + '%';
+                }
+            });
+
+            // Atualizar gráficos
+            if (data.chart_data) {
+                backupChart.data.datasets[0].data = data.chart_data;
+                backupChart.update('none');
+            }
+        }
+
+        // Navegação da sidebar
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    
+                    // Remover classe active de todos os links
+                    document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                    
+                    // Adicionar classe active ao link clicado
+                    this.classList.add('active');
+                    
+                    // Carregar seção correspondente
+                    const section = this.getAttribute('data-section');
+                    if (section) {
+                        loadSection(section);
+                    }
+                }
+            });
+        });
+
+        function loadSection(section) {
+            // Implementar carregamento dinâmico de seções
+            console.log('Carregando seção:', section);
+            // Aqui você pode implementar AJAX para carregar diferentes seções
+        }
+
+        // Responsividade
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // Adicionar botão de menu para mobile
+        if (window.innerWidth <= 768) {
+            const header = document.querySelector('.dashboard-header');
+            const menuBtn = document.createElement('button');
+            menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            menuBtn.className = 'btn btn-primary';
+            menuBtn.style.marginRight = '10px';
+            menuBtn.onclick = toggleSidebar;
+            header.insertBefore(menuBtn, header.firstChild);
+        }
+    </script>
+</body>
+</html>

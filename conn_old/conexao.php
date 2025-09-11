@@ -51,8 +51,8 @@
 $config = [
     'cloud' => [
         'host' => '10.250.250.214',
-        'username' => 'tasy',
-        'password' => 'XTXYJWIKZF',
+        'username' => 'ISCMC',
+        'password' => 'FFEYXAASY',
         'service_name' => 'dbhomol.tasy'
     ],
     'local' => [

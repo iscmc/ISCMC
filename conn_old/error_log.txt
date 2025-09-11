@@ -155,3 +155,25 @@ Erro ao criar CPOE_INTERVENCAO: Erro ao executar DDL para CPOE_INTERVENCAO: ORA-
 Erro ao criar CPOE_ANATOMIA_PATOLOGICA: Erro ao executar DDL para CPOE_ANATOMIA_PATOLOGICA: ORA-43929: Collation cannot be specified if parameter MAX_STRING_SIZE=STANDARD is set.
 Erro de conexão - Cloud: Falhou, Local: OK
 Erro de conexão - Cloud: Falhou, Local: OK
+Erro de conexão - Cloud: Falhou, Local: OK
+Erro ao criar USUARIO: DDL vazio ou não obtido para a tabela USUARIO no schema TASY
+Erro ao criar CPOE_DIETA: DDL vazio ou não obtido para a tabela CPOE_DIETA no schema TASY
+Erro ao criar CPOE_MATERIAL: DDL vazio ou não obtido para a tabela CPOE_MATERIAL no schema TASY
+Erro ao criar CPOE_PROCEDIMENTO: DDL vazio ou não obtido para a tabela CPOE_PROCEDIMENTO no schema TASY
+Erro ao criar CPOE_GASOTERAPIA: DDL vazio ou não obtido para a tabela CPOE_GASOTERAPIA no schema TASY
+Erro ao criar CPOE_RECOMENDACAO: DDL vazio ou não obtido para a tabela CPOE_RECOMENDACAO no schema TASY
+Erro ao criar CPOE_HEMOTERAPIA: DDL vazio ou não obtido para a tabela CPOE_HEMOTERAPIA no schema TASY
+Erro ao criar CPOE_DIALISE: DDL vazio ou não obtido para a tabela CPOE_DIALISE no schema TASY
+Erro ao criar CPOE_INTERVENCAO: DDL vazio ou não obtido para a tabela CPOE_INTERVENCAO no schema TASY
+Erro ao criar CPOE_ANATOMIA_PATOLOGICA: DDL vazio ou não obtido para a tabela CPOE_ANATOMIA_PATOLOGICA no schema TASY
+Erro ao copiar USUARIO: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_DIETA: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_MATERIAL: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_PROCEDIMENTO: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_GASOTERAPIA: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_RECOMENDACAO: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_HEMOTERAPIA: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_DIALISE: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_INTERVENCAO: ORA-02019: connection description for remote database not found
+Erro ao copiar CPOE_ANATOMIA_PATOLOGICA: ORA-02019: connection description for remote database not found
+Erro ao atualizar timestamp de backup: ORA-00942: table or view does not exist

@@ -107,7 +107,7 @@
                                         <td>
                                             <?php if (!empty($proc['DT_ATUALIZACAO_FORMATADA'])): ?>
                                                 <small class="text-muted"><?php echo $proc['DT_ATUALIZACAO_FORMATADA']; ?></small>
-                                            <?php else: ?>
+                                                <?php else: ?>
                                                 <span class="text-muted">-</span>
                                             <?php endif; ?>
                                         </td>

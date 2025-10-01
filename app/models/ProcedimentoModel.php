@@ -15,28 +15,30 @@ class ProcedimentoModel {
         $sql = "SELECT 
                     p.NR_SEQUENCIA,
                     p.NR_ATENDIMENTO,
-                    p.CD_PACIENTE,
-                    p.DS_PROCEDIMENTO,
-                    p.DT_PROCEDIMENTO,
+                    p.CD_PESSOA_FISICA,
+                    p.DS_PROCEDIMENTO_PEDIDO,
+                    p.DT_LIBERACAO,
                     p.DS_OBSERVACAO,
                     p.NM_USUARIO,
                     p.DT_ATUALIZACAO,
-                    a.NM_PACIENTE,
-                    u.NM_USUARIO_COMPLETO
+                    b.NM_PESSOA_FISICA,
+                    u.DS_USUARIO
                 FROM CPOE_PROCEDIMENTO p
-                LEFT JOIN ATENDIMENTO a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
+                LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
                 LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
+                JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
                 WHERE p.NR_SEQUENCIA IS NOT NULL
                 ORDER BY p.DT_ATUALIZACAO DESC, p.NR_SEQUENCIA DESC";
         
         if ($limit > 0) {
-            $sql = "SELECT * FROM ($sql) WHERE ROWNUM <= :limit OFFSET :offset";
+            $sql = "SELECT * FROM ($sql) 
+                    OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
         }
-        
+
         $stmt = oci_parse($this->conn, $sql);
         if ($limit > 0) {
-            oci_bind_by_name($stmt, ':limit', $limit);
             oci_bind_by_name($stmt, ':offset', $offset);
+            oci_bind_by_name($stmt, ':limit', $limit);
         }
         
         if (!oci_execute($stmt)) {
@@ -86,21 +88,23 @@ class ProcedimentoModel {
     }
     
     /**
-     * Busca procedimentos por paciente
-     */
+    * Busca procedimentos por paciente
+    */
     public function getProcedimentosByPaciente($pacienteId) {
         $sql = "SELECT 
                     p.NR_SEQUENCIA,
-                    p.DS_PROCEDIMENTO,
-                    p.DT_PROCEDIMENTO,
+                    p.DS_PROCEDIMENTO_PEDIDO,
+                    p.DT_LIBERACAO,
                     p.DS_OBSERVACAO,
                     p.NM_USUARIO,
                     p.DT_ATUALIZACAO,
-                    u.NM_USUARIO_COMPLETO
+                    u.DS_USUARIO,
+                    b.NM_PESSOA_FISICA
                 FROM CPOE_PROCEDIMENTO p
                 LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
-                WHERE p.CD_PACIENTE = :paciente_id
-                ORDER BY p.DT_PROCEDIMENTO DESC";
+                JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
+                WHERE p.CD_PESSOA_FISICA = :paciente_id
+                ORDER BY p.DT_LIBERACAO DESC";
         
         $stmt = oci_parse($this->conn, $sql);
         oci_bind_by_name($stmt, ':paciente_id', $pacienteId);
@@ -197,19 +201,17 @@ class ProcedimentoModel {
      * Conta total de procedimentos
      */
     public function getTotalProcedimentos() {
-        $sql = "SELECT COUNT(*) as total FROM CPOE_PROCEDIMENTO WHERE NR_SEQUENCIA IS NOT NULL";
+        $sql = "SELECT COUNT(*) as total 
+                FROM CPOE_PROCEDIMENTO p
+                JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
+                WHERE p.NR_SEQUENCIA IS NOT NULL";
+        
         $stmt = oci_parse($this->conn, $sql);
         oci_execute($stmt);
         $result = oci_fetch_assoc($stmt);
         oci_free_statement($stmt);
         
         return $result['TOTAL'] ?? 0;
-    }
-    
-    public function __destruct() {
-        if ($this->conn) {
-            oci_close($this->conn);
-        }
     }
 }
 ?>

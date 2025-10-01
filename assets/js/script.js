@@ -1,157 +1,314 @@
-/*
-	Projeto Contingenciamento
-	Departamento de TI - Sistemas | ISCMC
-	Este arquivo de scripts faz parte do sistema de contingenciamento Tasy off grid
-*/
+/**
+ * ISCMC Portal - Xintra Style Interactions
+ */
 
-(function() {
+class ISCMCApp {
+    constructor() {
+        this.init();
+    }
 
-	"use strict";
-	
-	var	$body = document.querySelector('body');
-	
-	// Methods/polyfills.
-	
-	// classList | (c) @remy | github.com/remy/polyfills | rem.mit-license.org
-	!function(){function t(t){this.el=t;for(var n=t.className.replace(/^\s+|\s+$/g,"").split(/\s+/),i=0;i<n.length;i++)e.call(this,n[i])}function n(t,n,i){Object.defineProperty?Object.defineProperty(t,n,{get:i}):t.__defineGetter__(n,i)}if(!("undefined"==typeof window.Element||"classList"in document.documentElement)){var i=Array.prototype,e=i.push,s=i.splice,o=i.join;t.prototype={add:function(t){this.contains(t)||(e.call(this,t),this.el.className=this.toString())},contains:function(t){return-1!=this.el.className.indexOf(t)},item:function(t){return this[t]||null},remove:function(t){if(this.contains(t)){for(var n=0;n<this.length&&this[n]!=t;n++);s.call(this,n,1),this.el.className=this.toString()}},toString:function(){return o.call(this," ")},toggle:function(t){return this.contains(t)?this.remove(t):this.add(t),this.contains(t)}},window.DOMTokenList=t,n(Element.prototype,"classList",function(){return new t(this)})}}();
-	
-	// canUse
-	window.canUse=function(p){if(!window._canUse)window._canUse=document.createElement("div");var e=window._canUse.style,up=p.charAt(0).toUpperCase()+p.slice(1);return p in e||"Moz"+up in e||"Webkit"+up in e||"O"+up in e||"ms"+up in e};
-	
-	// window.addEventListener
-	(function(){if("addEventListener"in window)return;window.addEventListener=function(type,f){window.attachEvent("on"+type,f)}})();
-	
-	// Play initial animations on page load.
-	window.addEventListener('load', function() {
-		window.setTimeout(function() {
-			$body.classList.remove('is-preload');
-		}, 100);
-	});
-	
-	// Slideshow das imagens de fundo
-	(function() {		
-		var settings = {
-			images: {
-				'assets/images/bg01.jpg': 'center',
-				'assets/images/bg02.jpg': 'center',
-				'assets/images/bg03.jpg': 'center'
-			},
-			delay: 6000
-		};
-		
-		var	pos = 0, lastPos = 0,
-		$wrapper, $bgs = [], $bg,
-		k, v;
-		
-		$wrapper = document.createElement('div');
-		$wrapper.id = 'bg';
-		$body.appendChild($wrapper);
-		
-		for (k in settings.images) {
-		
-			// cria o fundo.
-			$bg = document.createElement('div');
-			$bg.style.backgroundImage = 'url("' + k + '")';
-			$bg.style.backgroundPosition = settings.images[k];
-			$wrapper.appendChild($bg);
-			
-			// coloca ele num array.
-			$bgs.push($bg);
-		
-		}
-		
-		// loop principal
-		$bgs[pos].classList.add('visible');
-		$bgs[pos].classList.add('top');
-		
-		if ($bgs.length == 1 ||	!canUse('transition'))
-		return;
-		
-		window.setInterval(function() {
-		
-			lastPos = pos;
-			pos++;
-			
-			if (pos >= $bgs.length)
-			pos = 0;
-			
-			$bgs[lastPos].classList.remove('top');
-			$bgs[pos].classList.add('visible');
-			$bgs[pos].classList.add('top');
-			
-			window.setTimeout(function() {
-				$bgs[lastPos].classList.remove('visible');
-			}, settings.delay / 2);
-		
-		}, settings.delay);
-		
-	})();
-	
-	// Formulário de e-mail
-	(function() {
-		
-		// Vars.
-		var $form = document.querySelectorAll('#signup-form')[0],
-		$submit = document.querySelectorAll('#signup-form input[type="submit"]')[0],
-		$message;
-		
-		// Bail if addEventListener isn't supported.
-		if (!('addEventListener' in $form))
-		return;
-		
-		// Message.
-		$message = document.createElement('span');
-		$message.classList.add('message');
-		$form.appendChild($message);
-		
-		$message._show = function(type, text) {
-		
-			$message.innerHTML = text;
-			$message.classList.add(type);
-			$message.classList.add('visible');
-			
-			window.setTimeout(function() {
-			$message._hide();
-			}, 3000);
-		
-		};
-		
-		$message._hide = function() {
-			$message.classList.remove('visible');
-		};
-		
-		// Events.
-		// Note: If you're *not* using AJAX, get rid of this event listener.
-		$form.addEventListener('submit', function(event) {
-		
-			event.stopPropagation();
-			event.preventDefault();
-			
-			// Hide message.
-			$message._hide();
-			
-			// Disable submit.
-			$submit.disabled = true;
-			
-			// Process form.
-			// Note: Doesn't actually do anything yet (other than report back with a "thank you"),
-			// but there's enough here to piece together a working AJAX submission call that does.
-			window.setTimeout(function() {
-			
-				// Reset form.
-				$form.reset();
-				
-				// Enable submit.
-				$submit.disabled = false;
-				
-				// Show message.
-				$message._show('success', 'Obrigado!');
-				//$message._show('failure', 'Something went wrong. Please try again.');
-			
-			}, 750);
-		
-		});
-		
-	})();
+    init() {
+        this.initTableInteractions();
+        this.initFormEnhancements();
+        //this.initSearch();
+        this.initToolbar();
+        this.initUIComponents();
+    }
 
-})();
+    initTableInteractions() {
+        // Seleção de linhas da tabela
+        document.addEventListener('click', (e) => {
+            const row = e.target.closest('tbody tr');
+            if (row && !e.target.closest('a, button')) {
+                this.toggleRowSelection(row);
+            }
+        });
+
+        // Ordenação de colunas
+        const sortableHeaders = document.querySelectorAll('th[data-sortable]');
+        sortableHeaders.forEach(header => {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', () => {
+                this.sortTable(header);
+            });
+        });
+    }
+
+    initToolbar() {
+        const searchInput = document.querySelector('.search-input');
+        const searchButton = document.querySelector('.toolbar .btn-primary');
+        const filterSelect = document.querySelector('.filter-select');
+        
+        if (searchInput && searchButton) {
+            searchButton.addEventListener('click', () => {
+                this.performSearch(searchInput.value, filterSelect.value);
+            });
+            
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.performSearch(searchInput.value, filterSelect.value);
+                }
+            });
+        }
+    }
+
+    toggleRowSelection(row) {
+        row.classList.toggle('selected');
+    }
+
+    sortTable(header) {
+        const table = header.closest('table');
+        const columnIndex = Array.from(header.parentNode.children).indexOf(header);
+        const isAscending = header.classList.contains('sort-asc');
+        
+        // Remove classes de ordenação de todos os headers
+        table.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        
+        // Adiciona classe ao header atual
+        header.classList.toggle('sort-asc', !isAscending);
+        header.classList.toggle('sort-desc', isAscending);
+        
+        // Implementar lógica de ordenação aqui
+        console.log(`Ordenando coluna ${columnIndex} - ${isAscending ? 'desc' : 'asc'}`);
+    }
+
+    initFormEnhancements() {
+        // Foco em inputs
+        const inputs = document.querySelectorAll('.form-control, .form-select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('focused');
+            });
+            
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('focused');
+            });
+        });
+
+        // Validação em tempo real
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                this.validateField(input);
+            });
+        });
+    }
+
+    validateField(field) {
+        // Implementar validações específicas
+        if (field.validity) {
+            if (field.validity.valid) {
+                field.classList.remove('error');
+            } else {
+                field.classList.add('error');
+            }
+        }
+    }
+
+    initSearch() {
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', this.debounce((e) => {
+                this.performSearch(e.target.value);
+            }, 300));
+        }
+    }
+    performSearch(term, filterType) {
+        console.log(`Buscando: "${term}" no filtro: ${filterType}`);
+        // Implementar lógica de busca específica
+        this.showLoading();
+        
+        setTimeout(() => {
+            this.hideLoading();
+            // Atualizar tabela com resultados
+        }, 500);
+    }
+    
+    updateSearchResults(count) {
+        let counter = document.getElementById('search-results-count');
+        if (!counter) {
+            counter = document.createElement('div');
+            counter.id = 'search-results-count';
+            counter.className = 'text-sm text-muted mt-2';
+            document.querySelector('.search-box').appendChild(counter);
+        }
+        counter.textContent = `${count} resultados encontrados`;
+    }
+
+    initUIComponents() {
+        // Tooltips
+        this.initTooltips();
+        
+        // Loading states
+        this.initLoadingStates();
+    }
+
+    initTooltips() {
+        const elements = document.querySelectorAll('[title]');
+        elements.forEach(el => {
+            el.addEventListener('mouseenter', this.showTooltip);
+            el.addEventListener('mouseleave', this.hideTooltip);
+        });
+    }
+
+    showTooltip(e) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = e.target.title;
+        tooltip.style.cssText = `
+            position: absolute;
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            z-index: 50;
+            white-space: nowrap;
+            pointer-events: none;
+        `;
+        
+        document.body.appendChild(tooltip);
+        
+        const rect = e.target.getBoundingClientRect();
+        tooltip.style.left = rect.left + 'px';
+        tooltip.style.top = (rect.top - tooltip.offsetHeight - 8) + 'px';
+        
+        e.target._tooltip = tooltip;
+    }
+
+    hideTooltip(e) {
+        if (e.target._tooltip) {
+            e.target._tooltip.remove();
+            e.target._tooltip = null;
+        }
+    }
+
+    initLoadingStates() {
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `
+                        <span class="spinner"></span>
+                        Processando...
+                    `;
+                    
+                    // Restaurar após 5 segundos (fallback)
+                    setTimeout(() => {
+                        if (submitBtn.disabled) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalText;
+                        }
+                    }, 5000);
+                }
+            });
+        });
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Exportação
+    exportData(format = 'csv') {
+        this.showLoading();
+        
+        // Simular exportação
+        setTimeout(() => {
+            const data = "data:text/csv;charset=utf-8,";
+            const encodedUri = encodeURI(data);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `procedimentos_${new Date().toISOString().split('T')[0]}.${format}`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            this.hideLoading();
+            this.showNotification('Dados exportados com sucesso', 'success');
+        }, 1000);
+    }
+
+    showLoading() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        `;
+        overlay.innerHTML = '<div class="spinner" style="width: 2rem; height: 2rem;"></div>';
+        document.body.appendChild(overlay);
+    }
+
+    hideLoading() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) overlay.remove();
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} fixed top-4 right-4 z-50 max-w-sm`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+            max-width: 24rem;
+        `;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', function() {
+    window.ISCMC_APP = new ISCMCApp();
+});
+
+// Utilitários globais
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    const options = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleDateString('pt-BR', options);
+}
+
+function truncateText(text, length = 100) {
+    if (!text) return '';
+    if (text.length <= length) return text;
+    return text.substring(0, length) + '...';
+}
+
+function confirmAction(message = 'Tem certeza que deseja realizar esta ação?') {
+    return confirm(message);
+}

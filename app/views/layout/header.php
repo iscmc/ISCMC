@@ -55,10 +55,49 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="/ISCMC/" class="text-white bg-primary px-3 py-2 rounded-md font-medium flex items-center space-x-2">
-                        <i class="fas fa-procedures"></i>
-                        <span>Procedimentos</span>
-                    </a>
+                    <!-- Dropdown de Procedimentos -->
+                    <div class="relative group">
+                        <button class="text-white bg-primary px-3 py-2 rounded-md font-medium flex items-center space-x-2 hover:bg-primary-dark transition duration-200">
+                            <i class="fas fa-procedures"></i>
+                            <span>Procedimentos</span>
+                            <i class="fas fa-chevron-down text-xs ml-1"></i>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-200">
+                            <div class="py-2">
+                                <a href="/ISCMC/nutricao/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-apple-alt text-green-500 w-5"></i>
+                                    <span>Nutrição</span>
+                                </a>
+                                <a href="/ISCMC/medicamentos/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-pills text-blue-500 w-5"></i>
+                                    <span>Soluções e Medicamentos</span>
+                                </a>
+                                <a href="/ISCMC/procedimentos/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-procedures text-red-500 w-5"></i>
+                                    <span>Procedimentos</span>
+                                </a>
+                                <a href="/ISCMC/gasoterapia/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-wind text-cyan-500 w-5"></i>
+                                    <span>Gasoterapia</span>
+                                </a>
+                                <a href="/ISCMC/recomendacoes/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-stethoscope text-purple-500 w-5"></i>
+                                    <span>Recomendações</span>
+                                </a>
+                                <a href="/ISCMC/hemoterapia/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-tint text-red-600 w-5"></i>
+                                    <span>Hemoterapia</span>
+                                </a>
+                                <a href="/ISCMC/dialise/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-droplet text-orange-500 w-5"></i>
+                                    <span>Diálise</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <a href="/TASYBackup/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium flex items-center space-x-2">
                         <i class="fas fa-database"></i>
                         <span>Backup</span>

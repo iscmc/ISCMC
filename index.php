@@ -11,39 +11,33 @@ $id = $_GET['id'] ?? null;
 $controller_name = $_GET['controller'] ?? 'procedimento';
 
 try {
+    // Define qual controller usar
     switch ($controller_name) {
         case 'medicamentos':
-            // Inclui o controller de medicamentos
-            require_once __DIR__ . '/app/controllers/MedicamentoController.php';
-            $controller = new MedicamentoController();
+            if (file_exists(__DIR__ . '/app/controllers/MedicamentoController.php')) {
+                require_once __DIR__ . '/app/controllers/MedicamentoController.php';
+                $controller = new MedicamentoController();
+            } else {
+                // Fallback - mostra página básica de medicamentos
+                require_once __DIR__ . '/app/views/medicamentos/index.php';
+                exit;
+            }
             break;
             
         case 'procedimento':
         default:
-            // Inclui o controller de procedimentos
             require_once __DIR__ . '/app/controllers/ProcedimentoController.php';
             $controller = new ProcedimentoController();
             break;
     }
 
-    switch ($action) {
-        case 'view':
-            if ($id) {
-                $controller->view($id);
-            } else {
-                $controller->index();
-            }
-            break;
-            
-        case 'search':
-            $controller->search();
-            break;
-            
-        case 'index':
-        default:
-            $controller->index();
-            break;
+    // Executa a ação
+    if (method_exists($controller, $action)) {
+        $controller->$action($id);
+    } else {
+        $controller->index();
     }
+    
 } catch (Exception $e) {
     echo "<div class='alert alert-danger m-4'>Erro: " . $e->getMessage() . "</div>";
 }

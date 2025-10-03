@@ -1,24 +1,24 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light mt-5 py-4">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Irmandade da Santa Casa de Misericórdia de Curitiba</h6>
-                    <p class="mb-0 small">
+    <footer class="bg-gray-900 text-white mt-auto">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <div class="text-center md:text-left">
+                    <h6 class="font-bold text-lg mb-2">Irmandade da Santa Casa de Misericórdia de Curitiba</h6>
+                    <p class="text-gray-300 text-sm">
                         Sistema de Contingência - Consulta de Procedimentos<br>
-                        <span class="text-muted">Versão 1.0</span>
+                        <span class="text-gray-400">Versão 1.0</span>
                     </p>
                 </div>
-                <div class="col-md-6 text-end">
-                    <div class="mb-2">
-                        <span class="badge bg-success">
-                            <i class="fas fa-database me-1"></i>
+                <div class="text-center md:text-right">
+                    <div class="mb-3">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-database mr-1"></i>
                             Conectado ao Backup Local
                         </span>
                     </div>
-                    <p class="small text-muted mb-0">
+                    <p class="text-gray-400 text-sm">
                         &copy; <?php echo date('Y'); ?> ISCMC - Todos os direitos reservados<br>
                         Desenvolvido para contingência do TASY EMR pela equipe de TI Sistemas
                     </p>
@@ -27,9 +27,6 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
     <!-- Custom JS -->
     <script src="/ISCMC/assets/js/script.js"></script>
     
@@ -42,8 +39,9 @@
                 form.addEventListener('submit', function() {
                     const submitBtn = this.querySelector('button[type="submit"]');
                     if (submitBtn) {
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Processando...';
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processando...';
                         submitBtn.disabled = true;
+                        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
                     }
                 });
             });
@@ -62,12 +60,6 @@
                     }
                 }, 5000);
             });
-
-            // Tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
         });
 
         // Função para confirmar ações
@@ -78,21 +70,11 @@
         // Função para mostrar loading
         function showLoading() {
             const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 9999;
-            `;
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50';
             overlay.innerHTML = `
-                <div class="spinner-border text-light" role="status">
-                    <span class="visually-hidden">Carregando...</span>
+                <div class="bg-white p-6 rounded-lg shadow-xl flex items-center space-x-3">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span class="text-gray-700">Carregando...</span>
                 </div>
             `;
             document.body.appendChild(overlay);

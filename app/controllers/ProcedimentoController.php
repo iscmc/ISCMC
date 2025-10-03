@@ -57,32 +57,45 @@ class ProcedimentoController {
         }
     }
     
+    /**
+     * Busca procedimentos
+     */
     public function search() {
         try {
-            $search = isset($_POST['search']) ? trim($_POST['search']) : '';
-            $type = isset($_POST['type']) ? $_POST['type'] : 'procedimento';
+            $searchType = $_POST['type'] ?? 'procedimento';
+            $searchTerm = $_POST['search'] ?? '';
+            $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+            $perPage = 50;
+            $offset = ($page - 1) * $perPage;
+
+            $model = new ProcedimentoModel();
             
-            $results = [];
-            
-            if (!empty($search)) {
-                switch ($type) {
-                    case 'paciente':
-                        $results = $this->model->getProcedimentosByPaciente($search);
-                        break;
-                    case 'atendimento':
-                        $results = $this->model->getProcedimentosByAtendimento($search);
-                        break;
-                    default:
-                        // Busca geral - implementar se necessário
-                        $results = $this->model->getAllProcedimentos(100, 0);
-                        break;
-                }
+            // Busca os procedimentos baseado no tipo
+            switch ($searchType) {
+                case 'atendimento':
+                    $procedimentos = $model->getProcedimentosByAtendimento($searchTerm);
+                    $total = count($procedimentos); // Para busca específica, não temos paginação
+                    break;
+                    
+                case 'paciente':
+                    $procedimentos = $model->getProcedimentosByPaciente($searchTerm);
+                    $total = count($procedimentos);
+                    break;
+                    
+                case 'procedimento':
+                default:
+                    $procedimentos = $model->searchProcedimentos($searchTerm, $limit = $perPage, $offset = $offset);
+                    $total = $model->getSearchCount($searchTerm);
+                    break;
             }
-            
+
+            $totalPages = ceil($total / $perPage);
+
+            // Carrega a view de resultados
             require_once __DIR__ . '/../views/procedimentos/search.php';
             
         } catch (Exception $e) {
-            $this->showError("Erro na busca: " . $e->getMessage());
+            $this->handleError($e->getMessage());
         }
     }
     

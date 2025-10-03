@@ -21,11 +21,12 @@ class MedicamentoController {
             
             if (!empty($searchTerm)) {
                 $medicamentos = $this->model->search($searchType, $searchTerm, $offset, $limit);
+                $total = $this->model->getSearchCount($searchType, $searchTerm);
             } else {
                 $medicamentos = $this->model->getAll($offset, $limit);
+                $total = $this->model->getTotalMedicamentos();
             }
             
-            $total = $this->model->getTotalMedicamentos();
             $totalPages = ceil($total / $limit);
             
             require_once __DIR__ . '/../views/medicamentos/index.php';

@@ -66,10 +66,13 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-200">
                             <div class="py-2">
-                                <a href="/ISCMC/nutricao/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                <?php
+                                /*<a href="/ISCMC/nutricao/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
                                     <i class="fas fa-apple-alt text-green-500 w-5"></i>
                                     <span>Nutrição</span>
                                 </a>
+                                */
+                                ?>
                                 <a href="/ISCMC/medicamentos/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
                                     <i class="fas fa-pills text-blue-500 w-5"></i>
                                     <span>Soluções e Medicamentos</span>
@@ -78,6 +81,8 @@
                                     <i class="fas fa-procedures text-red-500 w-5"></i>
                                     <span>Procedimentos</span>
                                 </a>
+                                <?php
+                                /*
                                 <a href="/ISCMC/gasoterapia/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
                                     <i class="fas fa-wind text-cyan-500 w-5"></i>
                                     <span>Gasoterapia</span>
@@ -94,6 +99,8 @@
                                     <i class="fas fa-droplet text-orange-500 w-5"></i>
                                     <span>Diálise</span>
                                 </a>
+                                */
+                                ?>
                             </div>
                         </div>
                     </div>

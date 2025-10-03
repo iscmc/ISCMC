@@ -85,7 +85,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <?php if (empty($procedimentos)): ?>
+                    <?php if (empty($medicamentos)): ?>
                         <tr>
                             <td colspan="9" class="px-6 py-12 text-center">
                                 <div class="text-gray-400">
@@ -95,7 +95,7 @@
                             </td>
                         </tr>
                     <?php else: ?>
-                        <?php foreach ($procedimentos as $med): ?>
+                        <?php foreach ($medicamentos as $med): ?>
                         <tr class="hover:bg-gray-50 transition duration-150">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -147,7 +147,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <?php if (!empty($med['DT_INICIO_FORMATADA'])): ?>
-                                    <span class="text-gray-900"><?php echo $med['DT_INICIO_FORMATADA']; ?></span>
+                                    <span class="text-sm text-gray-900"><?php echo $med['DT_INICIO_FORMATADA']; ?></span>
                                 <?php else: ?>
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>

@@ -63,23 +63,30 @@ class MedicamentoModel {
         return $medicamentos;
     }
 
-    public function search($type, $term, $offset = 0, $limit = 50) {
-        $term = strtoupper(trim($term));
-        $params = [];
+    public function search($searchType, $searchTerm, $offset = 0, $limit = 50) {
+        $searchTerm = strtoupper(trim($searchTerm));
         $whereConditions = [];
+        $params = [];
 
-        switch ($type) {
+        switch ($searchType) {
             case 'medicamento':
-                $whereConditions[] = "UPPER(mat.DS_MATERIAL) LIKE UPPER(:term)";
-                $params[':term'] = "%$term%";
+                $whereConditions[] = "UPPER(mat.DS_MATERIAL) LIKE UPPER('%' || :search_term || '%')";
+                $params[':search_term'] = $searchTerm;
                 break;
+                
             case 'paciente':
-                $whereConditions[] = "m.NR_ATENDIMENTO = :term";
-                $params[':term'] = $term;
+                $whereConditions[] = "UPPER(obter_nome_pf(p.CD_PESSOA_FISICA)) LIKE UPPER('%' || :search_term || '%')";
+                $params[':search_term'] = $searchTerm;
                 break;
+                
             case 'atendimento':
-                $whereConditions[] = "m.NR_ATENDIMENTO = :term";
-                $params[':term'] = $term;
+                $whereConditions[] = "m.NR_ATENDIMENTO = :search_term";
+                $params[':search_term'] = $searchTerm;
+                break;
+                
+            case 'usuario':
+                $whereConditions[] = "UPPER(u.DS_USUARIO) LIKE UPPER('%' || :search_term || '%')";
+                $params[':search_term'] = $searchTerm;
                 break;
         }
 
@@ -148,6 +155,59 @@ class MedicamentoModel {
         return $medicamentos;
     }
 
+    /**
+     * Conta total de resultados da busca
+     */
+    public function getSearchCount($searchType, $searchTerm) {
+        $searchTerm = strtoupper(trim($searchTerm));
+        $whereConditions = [];
+        $params = [];
+
+        switch ($searchType) {
+            case 'medicamento':
+                $whereConditions[] = "UPPER(mat.DS_MATERIAL) LIKE UPPER('%' || :search_term || '%')";
+                $params[':search_term'] = $searchTerm;
+                break;
+                
+            case 'paciente':
+                $whereConditions[] = "UPPER(obter_nome_pf(p.CD_PESSOA_FISICA)) LIKE UPPER('%' || :search_term || '%')";
+                $params[':search_term'] = $searchTerm;
+                break;
+                
+            case 'atendimento':
+                $whereConditions[] = "m.NR_ATENDIMENTO = :search_term";
+                $params[':search_term'] = $searchTerm;
+                break;
+                
+            case 'usuario':
+                $whereConditions[] = "UPPER(u.DS_USUARIO) LIKE UPPER('%' || :search_term || '%')";
+                $params[':search_term'] = $searchTerm;
+                break;
+        }
+
+        $sql = "SELECT COUNT(*) as total 
+                FROM CPOE_MATERIAL m
+                LEFT JOIN ATENDIMENTO_PACIENTE p ON m.NR_ATENDIMENTO = p.NR_ATENDIMENTO
+                LEFT JOIN USUARIO u ON m.NM_USUARIO = u.NM_USUARIO
+                LEFT JOIN MATERIAL mat ON m.CD_MATERIAL = mat.CD_MATERIAL";
+
+        if (!empty($whereConditions)) {
+            $sql .= " WHERE " . implode(' AND ', $whereConditions);
+        }
+
+        $stmt = oci_parse($this->conn, $sql);
+        
+        foreach ($params as $key => $value) {
+            oci_bind_by_name($stmt, $key, $value);
+        }
+        
+        oci_execute($stmt);
+        $result = oci_fetch_assoc($stmt);
+        oci_free_statement($stmt);
+        
+        return $result['TOTAL'] ?? 0;
+    }
+
     public function getById($id) {
         $sql = "SELECT 
                     m.*,
@@ -185,7 +245,6 @@ class MedicamentoModel {
      * Formata os dados para exibição
      */
     private function formatRow($row) {
-        // Garante que todas as chaves necessárias existam
         $defaults = [
             'DS_MEDICAMENTO' => 'N/A',
             'NOME_PACIENTE' => 'N/A',
@@ -218,21 +277,16 @@ class MedicamentoModel {
         return $row;
     }
     
-    /**
-     * Formata data Oracle para formato brasileiro
-     */
     private function formatDate($oracleDate) {
         if (empty($oracleDate) || $oracleDate == 'N/A') {
             return 'N/A';
         }
         
         try {
-            // Se já está formatado, retorna como está
             if (is_string($oracleDate) && preg_match('/^\d{2}\/\d{2}\/\d{4}/', $oracleDate)) {
                 return $oracleDate;
             }
             
-            // Tenta conversão genérica
             $timestamp = strtotime($oracleDate);
             if ($timestamp !== false) {
                 return date('d/m/Y H:i', $timestamp);
@@ -245,9 +299,6 @@ class MedicamentoModel {
         return substr($oracleDate, 0, 50);
     }
     
-    /**
-     * Conta total de medicamentos
-     */
     public function getTotalMedicamentos() {
         $sql = "SELECT COUNT(*) as total FROM CPOE_MATERIAL m";
         

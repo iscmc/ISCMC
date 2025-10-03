@@ -35,7 +35,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Navbar -->
-    <nav class="bg-gray-900 text-white shadow-lg">
+    <nav class="bg-gray-700 text-white shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->

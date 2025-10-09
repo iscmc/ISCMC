@@ -1,5 +1,15 @@
 /* Portal de Contingência ISCMC - Estilos Customizados */
 
+:root {
+    --color-primary: #FA0F0F;
+    --color-primary-dark: #CC0C0C;
+    --color-secondary: #6B7280;
+    --color-success: #0d9488;
+    --color-danger: #EF4444;
+    --color-warning: #F59E0B;
+    --color-info: #0EA5E9;
+}
+
 body {
     background-color: #f8f9fa;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

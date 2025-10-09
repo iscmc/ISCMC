@@ -4,34 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ISCMC - Consulta de Procedimentos</title>
-    <link rel="icon" type="image/x-icon" href="assets/images/icone-site.png">
+    <link rel="icon" type="image/x-icon" href="/ISCMC/assets/images/icone-site.png">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS 
+    <link href="/dist/output.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="/ISCMC/dist/output.css" rel="stylesheet"> 
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/ISCMC/assets/css/all.min.css">
     
-    <!-- Custom CSS -->
+    <!-- Minha própria folha de estilos  -->
     <link href="/ISCMC/assets/css/style.css" rel="stylesheet">
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#FA0F0F',
-                        'primary-dark': '#CC0C0C',
-                        secondary: '#6B7280',
-                        success: '#0d9488',
-                        danger: '#EF4444',
-                        warning: '#F59E0B',
-                        info: '#0EA5E9',
-                    }
-                }
-            }
-        }
-    </script>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Navbar -->

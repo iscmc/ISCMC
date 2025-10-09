@@ -36,6 +36,10 @@ class MedicamentoModel {
                 LEFT JOIN ATENDIMENTO_PACIENTE p ON m.NR_ATENDIMENTO = p.NR_ATENDIMENTO
                 LEFT JOIN USUARIO u ON m.NM_USUARIO = u.NM_USUARIO
                 LEFT JOIN MATERIAL mat ON m.CD_MATERIAL = mat.CD_MATERIAL
+                WHERE p.DT_ATUALIZACAO >= SYSDATE - 2
+                AND mat.IE_TIPO_MATERIAL <> 1 --material
+                AND mat.IE_TIPO_MATERIAL <> 4 --serviços
+                AND mat.IE_TIPO_MATERIAL <> 5 --gêneros alimentícios
                 ORDER BY m.DT_ATUALIZACAO DESC";
         
         if ($limit > 0) {

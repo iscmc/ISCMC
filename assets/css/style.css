@@ -184,12 +184,15 @@ footer .badge {
     animation: spin 1s linear infinite;
 }
 
-/* Adicione ao style.css */
+/* para limitar texto longo em tabelas */
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    /* Fallback para navegadores mais antigos */
+    max-height: 3em;
+    line-height: 1.5em;
 }
 
 .line-clamp-3 {
@@ -197,4 +200,7 @@ footer .badge {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    /* Fallback para navegadores mais antigos */
+    max-height: 4.5em;
+    line-height: 1.5em;
 }

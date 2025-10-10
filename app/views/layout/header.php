@@ -7,7 +7,6 @@
     <link rel="icon" type="image/x-icon" href="/ISCMC/assets/images/icone-site.png">
 
     <!-- Tailwind CSS 
-    <link href="/dist/output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script> -->
     <link href="/ISCMC/dist/output.css" rel="stylesheet"> 
     

@@ -8,13 +8,15 @@
 
     <!-- Tailwind CSS 
     <script src="https://cdn.tailwindcss.com"></script> -->
-    <link href="/ISCMC/dist/output.css" rel="stylesheet"> 
+    <link href="/ISCMC/dist/output.css" rel="stylesheet">
+    <link href="/ISCMC/assets/css/tailwind.css" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="/ISCMC/assets/css/all.min.css">
     
     <!-- Minha própria folha de estilos  -->
     <link href="/ISCMC/assets/css/style.css" rel="stylesheet">
+    <script src="/ISCMC/assets/js/chart.js"></script>
     
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -24,7 +26,7 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="/ISCMC/" class="flex items-center space-x-3 text-white hover:text-gray-200">
+                    <a href="/ISCMC/?controller=dashboard" class="flex items-center space-x-3 text-white hover:text-gray-200">
                         <img src="/ISCMC/assets/images/logo-ISCMC.png" style="margin-top:10px;">
                         <span class="font-bold text-lg">ISCMC - Sistema de Contingência</span>
                     </a>

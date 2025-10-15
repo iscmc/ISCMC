@@ -23,4 +23,10 @@
     .badge-low {
         @apply bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold;
     }
+
+    @layer utilities {
+        .gap-2 {
+            gap: 0.5rem;
+        }
+    }
 }

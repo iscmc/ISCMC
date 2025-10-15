@@ -204,3 +204,7 @@ footer .badge {
     max-height: 4.5em;
     line-height: 1.5em;
 }
+
+.ocupacao-gradient {
+    background: linear-gradient(to bottom, #f6faffff, #dbeafe);
+}

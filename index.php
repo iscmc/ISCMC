@@ -5,10 +5,23 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Roteamento básico
+// Roteamento básico - Suporta tanto 'controller' quanto 'page' para compatibilidade
 $action = $_GET['action'] ?? 'index';
 $id = $_GET['id'] ?? null;
-$controller_name = $_GET['controller'] ?? 'dashboard'; // Alterado para dashboard como padrão
+
+// Determina o controller baseado em 'controller' ou 'page'
+if (isset($_GET['controller'])) {
+    $controller_name = $_GET['controller'];
+} elseif (isset($_GET['page'])) {
+    // Mapeia 'page' para 'controller' para compatibilidade
+    $page_to_controller = [
+        'dashboard' => 'dashboard',
+        'ocupacao_setor' => 'ocupacao_setor'
+    ];
+    $controller_name = $page_to_controller[$_GET['page']] ?? 'dashboard';
+} else {
+    $controller_name = 'dashboard'; // Padrão
+}
 
 // Se acessar a raiz sem parâmetros, redireciona para dashboard
 if (empty($_GET) && $_SERVER['REQUEST_URI'] === '/ISCMC/') {
@@ -38,12 +51,16 @@ try {
             require_once __DIR__ . '/app/controllers/ProcedimentoController.php';
             $controller = new ProcedimentoController();
             break;
+
+        case 'ocupacao_setor':
+            require_once __DIR__ . '/app/controllers/OcupacaoSetorController.php';
+            $controller = new OcupacaoSetorController();
+            break;
             
         default:
             // Se não encontrou, vai para dashboard
-            require_once __DIR__ . '/app/controllers/DashboardController.php';
-            $controller = new DashboardController();
-            break;
+            header('Location: index.php?controller=dashboard');
+            exit;
     }
 
     // Executa a ação

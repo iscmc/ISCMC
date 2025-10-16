@@ -17,7 +17,7 @@
 
     <!-- Tabela de Pacientes -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div class="px-4 py-2 border-b border-gray-200 bg-gray-50">
             <h2 class="text-xl font-semibold text-gray-800">Pacientes e Leitos</h2>
             <p class="text-sm text-gray-600">Lista detalhada de pacientes no setor</p>
         </div>
@@ -38,21 +38,21 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php foreach ($pacientes as $paciente): ?>
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="px-6 py-4 whitespace-nowrap">
+                    <tr class="hover:bg-gray-100 transition duration-150">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 <?= htmlspecialchars($paciente['LEITO'] ?? 'N/A') ?>
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">
                                 <?= htmlspecialchars($paciente['PACIENTE'] ?? 'N/D') ?>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?= $paciente['NR_PRONTUARIO'] ?? '0' ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?php
                             if (!empty($paciente['DT_NASCIMENTO'])) {
                                 $idade = date_diff(date_create($paciente['DT_NASCIMENTO']), date_create('today'))->y;
@@ -62,24 +62,24 @@
                             }
                             ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?= htmlspecialchars($paciente['NM_GUERRA'] ?? 'N/D') ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?php
                             if (!empty($paciente['DT_ENTRADA_UNIDADE'])) {
-                                echo date('d/m/Y H:i', strtotime($paciente['DT_ENTRADA_UNIDADE']));
+                                echo date('d/m/Y', strtotime($paciente['DT_ENTRADA_UNIDADE']));
                             } else {
                                 echo '-';
                             }
                             ?>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 <?= $paciente['QT_DIA_PERMANENCIA'] ?? '0' ?> dias
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?= htmlspecialchars($paciente['DS_STATUS_UNIDADE'] ?? 'N/D') ?>
                         </td>
                     </tr>
@@ -87,7 +87,7 @@
                     
                     <?php if (empty($pacientes)): ?>
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">
+                        <td colspan="8" class="px-4 py-2 text-center text-sm text-gray-500">
                             Nenhum paciente encontrado neste setor.
                         </td>
                     </tr>

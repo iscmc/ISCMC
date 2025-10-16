@@ -91,7 +91,7 @@
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-100">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Setor
@@ -124,8 +124,8 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php foreach ($dadosOcupacao as $setor): ?>
-                    <tr class="hover:bg-gray-50 transition duration-150">
-                        <td class="px-6 py-4 whitespace-nowrap">
+                    <tr class="hover:bg-gray-100 transition duration-150">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">
                                 <a href="index.php?controller=ocupacao_setor&setor=<?= $setor['CD_SETOR_ATENDIMENTO'] ?>" 
                                 class="text-blue-600 hover:text-blue-900 hover:underline">
@@ -134,34 +134,34 @@
                                 </a>
                             </div>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900 font-medium">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 font-medium">
                             <?= $setor['QTD_TOTAL'] ?>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                 <?= $setor['QTD_OCUPADAS'] ?>
                             </span>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                 <?= $setor['QTD_LIVRES'] ?>
                             </span>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?= $setor['QTD_AGUARDANDO_HIGIENIZACAO'] ?>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?= $setor['QTD_HIGIENIZACAO'] ?>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                 <?= $setor['QTD_ISOLADO'] ?>
                             </span>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                             <?= $setor['NR_UNIDADES_RESERVADAS'] ?>
                         </td>
-                        <td class="px-6 py-2 whitespace-nowrap">
+                        <td class="px-4 py-2 whitespace-nowrap">
                             <?php 
                             $percentual = $setor['PERCENTUAL_OCUPACAO'];
                             $cor = $percentual >= 85 ? 'bg-red-100 text-red-800' : 
@@ -175,7 +175,7 @@
                     <?php endforeach; ?>
                     
                     <!-- Linha de Totais -->
-                    <tr class="bg-gray-50 font-semibold border-t-2 border-gray-300">
+                    <tr class="bg-gray-100 font-semibold border-t-2 border-gray-300">
                         <td class="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
                             <strong>TOTAL GERAL</strong>
                         </td>

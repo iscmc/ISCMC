@@ -93,13 +93,13 @@
                         </tr>
                     <?php else: ?>
                         <?php foreach ($procedimentos as $proc): ?>
-                        <tr class="hover:bg-gray-50 transition duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                        <tr class="hover:bg-gray-100 transition duration-150">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                     <?php echo htmlspecialchars($proc['NR_SEQUENCIA']); ?>
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($proc['NR_ATENDIMENTO'])): ?>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         <?php echo htmlspecialchars($proc['NR_ATENDIMENTO']); ?>
@@ -108,30 +108,30 @@
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($proc['NOME_PACIENTE'])): ?>
                                     <span class="text-sm text-gray-900"><?php echo $proc['NOME_PACIENTE']; ?></span>
                                 <?php else: ?>
                                     <span class="text-gray-500">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
                                 <div class="font-medium text-gray-900"><?php echo htmlspecialchars($proc['DS_PROC_EXAME'] ?? 'N/A'); ?></div>
                                 <?php if (!empty($proc['DS_OBSERVACAO_PREVIEW'])): ?>
                                     <div class="text-sm text-gray-500 mt-1"><?php echo htmlspecialchars($proc['DS_OBSERVACAO_PREVIEW']); ?></div>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($proc['DT_PREV_EXECUCAO'])): ?>
                                     <span class="text-gray-900"><?php echo $proc['DT_PREV_EXECUCAO']; ?></span>
                                 <?php else: ?>
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <span class="text-sm text-gray-900"><?php echo htmlspecialchars($proc['NM_USUARIO_COMPLETO'] ?? $proc['NM_USUARIO'] ?? 'N/A'); ?></span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <a href="?action=view&id=<?php echo $proc['NR_SEQUENCIA']; ?>" 
                                    class="inline-flex items-center px-3 py-1.5 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition duration-200"
                                    title="Ver detalhes">
@@ -147,7 +147,7 @@
 
         <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
-        <div class="bg-white px-6 py-4 border-t border-gray-200">
+        <div class="bg-white px-4 py-2 border-t border-gray-200">
             <nav class="flex items-center justify-between">
                 <div class="flex justify-between flex-1 sm:hidden">
                     <?php if ($page > 1): ?>

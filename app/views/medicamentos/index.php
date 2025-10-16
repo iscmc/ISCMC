@@ -95,13 +95,13 @@
                         </tr>
                     <?php else: ?>
                         <?php foreach ($medicamentos as $med): ?>
-                        <tr class="hover:bg-gray-50 transition duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                        <tr class="hover:bg-gray-100 transition duration-150">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                     <?php echo htmlspecialchars($med['NR_SEQUENCIA']); ?>
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($med['NR_ATENDIMENTO'])): ?>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         <?php echo htmlspecialchars($med['NR_ATENDIMENTO']); ?>
@@ -110,20 +110,20 @@
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($med['NOME_PACIENTE'])): ?>
                                     <span class="text-sm text-gray-900"><?php echo htmlspecialchars($med['NOME_PACIENTE']); ?></span>
                                 <?php else: ?>
                                     <span class="text-gray-500">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-2">
                                 <div class="font-medium text-gray-900"><?php echo htmlspecialchars($med['DS_MEDICAMENTO'] ?? 'N/A'); ?></div>
                                 <?php if (!empty($med['DS_OBSERVACAO_PREVIEW'])): ?>
                                     <div class="text-sm text-gray-500 mt-1"><?php echo htmlspecialchars($med['DS_OBSERVACAO_PREVIEW']); ?></div>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">
                                     <?php if (!empty($med['QT_DOSE'])): ?>
                                         <?php echo htmlspecialchars($med['QT_DOSE']); ?>
@@ -135,7 +135,7 @@
                                     <?php endif; ?>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($med['IE_VIA_APLICACAO'])): ?>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <?php echo htmlspecialchars($med['IE_VIA_APLICACAO']); ?>
@@ -144,14 +144,14 @@
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <?php if (!empty($med['DT_INICIO_FORMATADA'])): ?>
                                     <span class="text-sm text-gray-900"><?php echo $med['DT_INICIO_FORMATADA']; ?></span>
                                 <?php else: ?>
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-4 py-2 whitespace-nowrap">
                                 <a href="?action=view&id=<?php echo $med['NR_SEQUENCIA']; ?>" 
                                    class="inline-flex items-center px-3 py-1.5 border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition duration-200"
                                    title="Ver detalhes">
@@ -167,7 +167,7 @@
 
         <!-- Pagination -->
         <?php if ($totalPages > 1): ?>
-        <div class="bg-white px-6 py-4 border-t border-gray-200">
+        <div class="bg-white px-4 py-2 border-t border-gray-200">
             <nav class="flex items-center justify-between">
                 <div class="flex justify-between flex-1 sm:hidden">
                     <?php if ($page > 1): ?>

@@ -172,7 +172,7 @@ class OcupacaoSetorModel {
             'QT_DIA_PERMANENCIA' => '0',
             'DT_ENTRADA_UNIDADE' => null,
             'DT_NASCIMENTO' => null,
-            'IE_SEXO' => 'X'
+            'IE_SEXO' => 'N/D'
         ];
         
         $row = array_merge($defaults, $row);

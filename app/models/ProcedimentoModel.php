@@ -44,8 +44,7 @@ class ProcedimentoModel {
         }
         
         if (!oci_execute($stmt)) {
-            $error = oci_error($stmt);
-            throw new Exception("Erro ao buscar procedimentos: " . $error['message']);
+            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
         }
         
         $procedimentos = [];
@@ -87,8 +86,7 @@ class ProcedimentoModel {
         oci_bind_by_name($stmt, ':id', $id);
         
         if (!oci_execute($stmt)) {
-            $error = oci_error($stmt);
-            throw new Exception("Erro ao buscar procedimento: " . $error['message']);
+            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
         }
         
         $row = oci_fetch_assoc($stmt);
@@ -125,8 +123,7 @@ class ProcedimentoModel {
         oci_bind_by_name($stmt, ':paciente_id', $pacienteId);
         
         if (!oci_execute($stmt)) {
-            $error = oci_error($stmt);
-            throw new Exception("Erro ao buscar procedimentos do paciente: " . $error['message']);
+            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
         }
         
         $procedimentos = [];
@@ -161,8 +158,7 @@ class ProcedimentoModel {
         oci_bind_by_name($stmt, ':atendimento_id', $atendimentoId);
         
         if (!oci_execute($stmt)) {
-            $error = oci_error($stmt);
-            throw new Exception("Erro ao buscar procedimentos do atendimento: " . $error['message']);
+            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
         }
         
         $procedimentos = [];
@@ -318,80 +314,85 @@ class ProcedimentoModel {
     }
 
     /**
- * Busca procedimentos por termo geral
- */
-public function searchProcedimentos($searchTerm, $limit = 50, $offset = 0) {
-    $sql = "SELECT 
-                p.NR_SEQUENCIA,
-                p.NR_ATENDIMENTO,
-                p.CD_PESSOA_FISICA,
-                obter_nome_pf(p.CD_PESSOA_FISICA) NOME_PACIENTE,
-                c.DS_PROC_EXAME,
-                to_char(p.DT_PREV_EXECUCAO, 'dd/mm/yyyy hh24:mm') DT_PREV_EXECUCAO,
-                p.DS_OBSERVACAO,
-                p.NM_USUARIO,
-                p.DT_ATUALIZACAO,
-                b.NM_PESSOA_FISICA as NM_USUARIO_COMPLETO,
-                u.DS_USUARIO
-            FROM CPOE_PROCEDIMENTO p
-            LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
-            LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
-            JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
-            JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
-            WHERE p.NR_SEQUENCIA IS NOT NULL
-            AND (UPPER(c.DS_PROC_EXAME) LIKE UPPER('%' || :search_term || '%')
-                 OR UPPER(p.DS_OBSERVACAO) LIKE UPPER('%' || :search_term || '%')
-                 OR UPPER(p.NM_USUARIO) LIKE UPPER('%' || :search_term || '%'))
-            ORDER BY p.DT_ATUALIZACAO DESC, p.NR_SEQUENCIA DESC";
-    
-    if ($limit > 0) {
-        $sql = "SELECT * FROM ($sql) 
-                OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
+     * Busca procedimentos por termo geral
+     */
+    public function searchProcedimentos($searchTerm, $limit = 50, $offset = 0) {
+        $sql = "SELECT 
+                    p.NR_SEQUENCIA,
+                    p.NR_ATENDIMENTO,
+                    p.CD_PESSOA_FISICA,
+                    obter_nome_pf(p.CD_PESSOA_FISICA) NOME_PACIENTE,
+                    c.DS_PROC_EXAME,
+                    to_char(p.DT_PREV_EXECUCAO, 'dd/mm/yyyy hh24:mm') DT_PREV_EXECUCAO,
+                    p.DS_OBSERVACAO,
+                    p.NM_USUARIO,
+                    p.DT_ATUALIZACAO,
+                    b.NM_PESSOA_FISICA as NM_USUARIO_COMPLETO,
+                    u.DS_USUARIO
+                FROM CPOE_PROCEDIMENTO p
+                LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
+                LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
+                JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
+                JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
+                WHERE p.NR_SEQUENCIA IS NOT NULL
+                AND (UPPER(c.DS_PROC_EXAME) LIKE UPPER('%' || :search_term || '%')
+                    OR UPPER(p.DS_OBSERVACAO) LIKE UPPER('%' || :search_term || '%')
+                    OR UPPER(p.NM_USUARIO) LIKE UPPER('%' || :search_term || '%'))
+                ORDER BY p.DT_ATUALIZACAO DESC, p.NR_SEQUENCIA DESC";
+        
+        if ($limit > 0) {
+            $sql = "SELECT * FROM ($sql) 
+                    OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
+        }
+
+        $stmt = oci_parse($this->conn, $sql);
+        oci_bind_by_name($stmt, ':search_term', $searchTerm);
+        
+        if ($limit > 0) {
+            oci_bind_by_name($stmt, ':offset', $offset);
+            oci_bind_by_name($stmt, ':limit', $limit);
+        }
+        
+        if (!oci_execute($stmt)) {
+            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
+        }
+        
+        $procedimentos = [];
+        while ($row = oci_fetch_assoc($stmt)) {
+            $procedimentos[] = $this->formatRow($row);
+        }
+        
+        oci_free_statement($stmt);
+        return $procedimentos;
     }
 
-    $stmt = oci_parse($this->conn, $sql);
-    oci_bind_by_name($stmt, ':search_term', $searchTerm);
-    
-    if ($limit > 0) {
-        oci_bind_by_name($stmt, ':offset', $offset);
-        oci_bind_by_name($stmt, ':limit', $limit);
+    /**
+     * Conta total de resultados da busca
+     */
+    public function getSearchCount($searchTerm) {
+        $sql = "SELECT COUNT(*) as total 
+                FROM CPOE_PROCEDIMENTO p
+                JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
+                JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
+                WHERE p.NR_SEQUENCIA IS NOT NULL
+                AND (UPPER(c.DS_PROC_EXAME) LIKE UPPER('%' || :search_term || '%')
+                    OR UPPER(p.DS_OBSERVACAO) LIKE UPPER('%' || :search_term || '%')
+                    OR UPPER(p.NM_USUARIO) LIKE UPPER('%' || :search_term || '%'))";
+        
+        $stmt = oci_parse($this->conn, $sql);
+        oci_bind_by_name($stmt, ':search_term', $searchTerm);
+        oci_execute($stmt);
+        $result = oci_fetch_assoc($stmt);
+        oci_free_statement($stmt);
+        
+        return $result['TOTAL'] ?? 0;
     }
-    
-    if (!oci_execute($stmt)) {
+
+    // Captura erros do Oracle e formata numa mensagem amivável
+    private function handleDatabaseError($stmt, $message) {
         $error = oci_error($stmt);
-        throw new Exception("Erro ao buscar procedimentos: " . $error['message']);
+        throw new Exception("$message: " . ($error['message'] ?? 'Erro desconhecido'));
     }
-    
-    $procedimentos = [];
-    while ($row = oci_fetch_assoc($stmt)) {
-        $procedimentos[] = $this->formatRow($row);
-    }
-    
-    oci_free_statement($stmt);
-    return $procedimentos;
-}
-
-/**
- * Conta total de resultados da busca
- */
-public function getSearchCount($searchTerm) {
-    $sql = "SELECT COUNT(*) as total 
-            FROM CPOE_PROCEDIMENTO p
-            JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
-            JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
-            WHERE p.NR_SEQUENCIA IS NOT NULL
-            AND (UPPER(c.DS_PROC_EXAME) LIKE UPPER('%' || :search_term || '%')
-                 OR UPPER(p.DS_OBSERVACAO) LIKE UPPER('%' || :search_term || '%')
-                 OR UPPER(p.NM_USUARIO) LIKE UPPER('%' || :search_term || '%'))";
-    
-    $stmt = oci_parse($this->conn, $sql);
-    oci_bind_by_name($stmt, ':search_term', $searchTerm);
-    oci_execute($stmt);
-    $result = oci_fetch_assoc($stmt);
-    oci_free_statement($stmt);
-    
-    return $result['TOTAL'] ?? 0;
-}
 }
 
 ?>

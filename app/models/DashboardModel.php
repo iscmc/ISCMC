@@ -31,8 +31,7 @@ class DashboardModel {
         $stmt = oci_parse($this->conn, $sql);
         
         if (!oci_execute($stmt)) {
-            $error = oci_error($stmt);
-            throw new Exception("Erro ao buscar ocupação hospitalar: " . $error['message']);
+            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
         }
         
         $resultados = [];
@@ -86,6 +85,11 @@ class DashboardModel {
         ];
         
         return array_merge($defaults, $row);
+    }
+
+    private function handleDatabaseError($stmt, $message) {
+        $error = oci_error($stmt);
+        throw new Exception("$message: " . ($error['message'] ?? 'Erro desconhecido'));
     }
 }
 ?>

@@ -18,8 +18,7 @@ class ProcedimentoController {
             // Busca
             $search = isset($_GET['search']) ? trim($_GET['search']) : '';
             
-            if (!empty($search)) {
-                // Implementar busca se necessário
+            if (!empty($search)) { // Implementar busca se necessário
                 $procedimentos = $this->model->getAllProcedimentos($limit, $offset);
             } else {
                 $procedimentos = $this->model->getAllProcedimentos($limit, $offset);
@@ -32,6 +31,9 @@ class ProcedimentoController {
             
         } catch (Exception $e) {
             $this->showError("Erro ao carregar procedimentos: " . $e->getMessage());
+        } finally {
+            // Fecha conexão para liberar recursos
+            DatabaseConfig::closeConnection();
         }
     }
     

@@ -73,4 +73,11 @@ try {
 } catch (Exception $e) {
     echo "<div class='alert alert-danger m-4'>Erro: " . $e->getMessage() . "</div>";
 }
+
+// Fecha conexão ao final da execução (boa prática)
+register_shutdown_function(function() {
+    if (class_exists('DatabaseConfig')) {
+        DatabaseConfig::closeConnection();
+    }
+});
 ?>

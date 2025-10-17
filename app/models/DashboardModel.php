@@ -9,38 +9,44 @@ class DashboardModel {
     }
     
     public function buscarOcupacaoHospitalar() {
-        $sql = "
-            select 
-                cd_setor_atendimento,
-                ds_setor_atendimento,
-                nr_unidades_setor qtd_total,
-                nr_unidades_ocupadas qtd_ocupadas,
-                nr_unidades_livres qtd_livres,
-                nr_unid_aguard_higien qtd_aguardando_higienizacao,
-                nr_unidades_higienizacao qtd_higienizacao,
-                qt_pac_isolado qtd_isolado,
-                nr_unidades_reservadas,
-                round(dividir((nr_unidades_ocupadas*100), (nr_unidades_setor-nr_unidades_interditadas-nr_unid_temp_ocup)),2) percentual_ocupacao
-            from ocup_ocupacao_setores_v2
-            where cd_estabelecimento_base = 89
-            and cd_classif_setor in (3, 4)
-            and ie_situacao = 'A'
-            and ie_ocup_hospitalar <> 'N'
-            order by cd_classif_setor, ds_setor_atendimento";
-        
-        $stmt = oci_parse($this->conn, $sql);
-        
-        if (!oci_execute($stmt)) {
-            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
+        try {
+            $sql = "
+                select 
+                    cd_setor_atendimento,
+                    ds_setor_atendimento,
+                    nr_unidades_setor qtd_total,
+                    nr_unidades_ocupadas qtd_ocupadas,
+                    nr_unidades_livres qtd_livres,
+                    nr_unid_aguard_higien qtd_aguardando_higienizacao,
+                    nr_unidades_higienizacao qtd_higienizacao,
+                    qt_pac_isolado qtd_isolado,
+                    nr_unidades_reservadas,
+                    round(dividir((nr_unidades_ocupadas*100), (nr_unidades_setor-nr_unidades_interditadas-nr_unid_temp_ocup)),2) percentual_ocupacao
+                from ocup_ocupacao_setores_v2
+                where cd_estabelecimento_base = 89
+                and cd_classif_setor in (3, 4)
+                and ie_situacao = 'A'
+                and ie_ocup_hospitalar <> 'N'
+                order by cd_classif_setor, ds_setor_atendimento";
+            
+            $stmt = oci_parse($this->conn, $sql);
+            
+            if (!oci_execute($stmt)) {
+                $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
+            }
+            
+            $resultados = [];
+            while ($row = oci_fetch_assoc($stmt)) {
+                $resultados[] = $this->formatRow($row);
+            }
+            
+            oci_free_statement($stmt);
+            return $resultados;
+            
+        } catch (Exception $e) {
+            error_log("DashboardModel buscarOcupacaoHospitalar error: " . $e->getMessage());
+            throw new Exception("Erro ao carregar dados de ocupação hospitalar");
         }
-        
-        $resultados = [];
-        while ($row = oci_fetch_assoc($stmt)) {
-            $resultados[] = $this->formatRow($row);
-        }
-        
-        oci_free_statement($stmt);
-        return $resultados;
     }
     
     public function calcularTotaisOcupacao($dados) {

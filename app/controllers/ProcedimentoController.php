@@ -19,12 +19,13 @@ class ProcedimentoController {
             $search = isset($_GET['search']) ? trim($_GET['search']) : '';
             
             if (!empty($search)) { // Implementar busca se necessário
-                $procedimentos = $this->model->getAllProcedimentos($limit, $offset);
+                $procedimentos = $this->model->searchProcedimentos($search, $limit, $offset);
+                $total = $this->model->getSearchCount($search);
             } else {
                 $procedimentos = $this->model->getAllProcedimentos($limit, $offset);
+                $total = $this->model->getTotalProcedimentos();
             }
-            
-            $total = $this->model->getTotalProcedimentos();
+
             $totalPages = ceil($total / $limit);
             
             require_once __DIR__ . '/../views/procedimentos/index.php';

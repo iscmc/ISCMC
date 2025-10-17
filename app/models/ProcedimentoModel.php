@@ -12,43 +12,43 @@ class ProcedimentoModel {
      * Busca todos os procedimentos com paginação
      */
     public function getAllProcedimentos($limit = 50, $offset = 0) {
-        $sql = "SELECT 
-                    p.NR_SEQUENCIA,
-                    p.NR_ATENDIMENTO,
-                    p.CD_PESSOA_FISICA,
-                    obter_nome_pf(p.CD_PESSOA_FISICA) NOME_PACIENTE,
-                    c.DS_PROC_EXAME,
-                    to_char(p.DT_PREV_EXECUCAO, 'dd/mm/yyyy hh24:mm') DT_PREV_EXECUCAO,
-                    p.DS_OBSERVACAO,
-                    p.NM_USUARIO,
-                    p.DT_ATUALIZACAO,
-                    b.NM_PESSOA_FISICA as NM_USUARIO_COMPLETO,
-                    u.DS_USUARIO
-                FROM CPOE_PROCEDIMENTO p
-                LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
-                LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
-                JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
-                JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
-                WHERE p.NR_SEQUENCIA IS NOT NULL
-                ORDER BY p.DT_ATUALIZACAO DESC, p.NR_SEQUENCIA DESC";
+        $sql = "SELECT * FROM (
+            SELECT 
+                p.NR_SEQUENCIA,
+                p.NR_ATENDIMENTO,
+                p.CD_PESSOA_FISICA,
+                obter_nome_pf(p.CD_PESSOA_FISICA) as NOME_PACIENTE,
+                c.DS_PROC_EXAME,
+                to_char(p.DT_PREV_EXECUCAO, 'dd/mm/yyyy hh24:mi') as DT_PREV_EXECUCAO,
+                p.DS_OBSERVACAO,
+                p.NM_USUARIO,
+                p.DT_ATUALIZACAO,
+                b.NM_PESSOA_FISICA as NM_USUARIO_COMPLETO,
+                u.DS_USUARIO,
+                ROW_NUMBER() OVER (ORDER BY p.DT_ATUALIZACAO DESC, p.NR_SEQUENCIA DESC) as rn
+            FROM CPOE_PROCEDIMENTO p
+            INNER JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
+            INNER JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
+            LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
+            WHERE p.NR_SEQUENCIA IS NOT NULL
+        ) 
+        WHERE rn BETWEEN :start_row AND :end_row";
         
-        if ($limit > 0) {
-            $sql = "SELECT * FROM ($sql) 
-                    OFFSET :offset ROWS FETCH NEXT :limit ROWS ONLY";
-        }
-
+        $start_row = $offset + 1;
+        $end_row = $offset + $limit;
+        
         $stmt = oci_parse($this->conn, $sql);
-        if ($limit > 0) {
-            oci_bind_by_name($stmt, ':offset', $offset);
-            oci_bind_by_name($stmt, ':limit', $limit);
-        }
+        oci_bind_by_name($stmt, ':start_row', $start_row);
+        oci_bind_by_name($stmt, ':end_row', $end_row);
         
         if (!oci_execute($stmt)) {
-            $this->handleDatabaseError($stmt, "Erro ao buscar ocupação hospitalar");
+            $this->handleDatabaseError($stmt, "Erro ao buscar procedimentos");
         }
         
         $procedimentos = [];
         while ($row = oci_fetch_assoc($stmt)) {
+            // Remove a coluna rn do resultado
+            unset($row['RN']);
             $procedimentos[] = $this->formatRow($row);
         }
         

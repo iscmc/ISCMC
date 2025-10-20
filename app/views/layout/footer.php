@@ -1,3 +1,19 @@
+<?php
+/**
+ * Portal de contingência ISCMC Off Grid
+ *
+ * Este arquivo faz parte do framework MVC Projeto Contingenciamento - FrontEnd.
+ *
+ * @category Framework
+ * @package  Servidor de contingência ISCMC
+ * @author   Sergio Figueroa <sergio.figueroa@iscmc.com.br>
+ * @license  MIT, Apache
+ * @link     http://10.132.16.43/ISCMC
+ * @version  1.0.0
+ * @since    2025-09-01
+ * @maindev  Sergio Figueroa
+ */
+?>
     </main>
 
     <!-- Footer -->

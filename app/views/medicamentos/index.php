@@ -1,4 +1,21 @@
-<?php include __DIR__ . '/../layout/header.php'; ?>
+<?php
+/**
+ * Portal de contingência ISCMC Off Grid
+ *
+ * Este arquivo faz parte do framework MVC Projeto Contingenciamento - FrontEnd.
+ *
+ * @category Framework
+ * @package  Servidor de contingência ISCMC
+ * @author   Sergio Figueroa <sergio.figueroa@iscmc.com.br>
+ * @license  MIT, Apache
+ * @link     http://10.132.16.43/ISCMC
+ * @version  1.0.0
+ * @since    2025-09-01
+ * @maindev  Sergio Figueroa
+ */
+
+include __DIR__ . '/../layout/header.php';
+?>
 
 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-10">
     <!-- Header -->

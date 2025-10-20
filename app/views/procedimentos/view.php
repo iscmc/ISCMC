@@ -81,8 +81,12 @@
                                     <dd class="text-sm text-gray-900 mt-1"><?php echo !empty($procedimento['DT_NASCIMENTO']) ? $procedimento['DT_NASCIMENTO_FORMATADA'] : 'N/A'; ?></dd>
                                 </div>
                                 <div>
+                                    <dt class="text-sm font-medium text-gray-500">Nome da mãe:</dt>
+                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['NM_MAE_PACIENTE'] ?? 'N/A'); ?></dd>
+                                </div>
+                                <div>
                                     <dt class="text-sm font-medium text-gray-500">Sexo:</dt>
-                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['TP_SEXO'] ?? 'N/A'); ?></dd>
+                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['IE_SEXO'] ?? 'N/A'); ?></dd>
                                 </div>
                             </dl>
                         </div>

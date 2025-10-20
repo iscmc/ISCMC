@@ -27,7 +27,7 @@ class ProcedimentoModel {
                 u.DS_USUARIO,
                 ROW_NUMBER() OVER (ORDER BY p.DT_ATUALIZACAO DESC, p.NR_SEQUENCIA DESC) as rn
             FROM CPOE_PROCEDIMENTO p
-            INNER JOIN PESSOA_FISICA b ON p.CD_PESSOA_FISICA = b.CD_PESSOA_FISICA
+            INNER JOIN PESSOA_FISICA b ON p.CD_MEDICO_EXEC = b.CD_PESSOA_FISICA
             INNER JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
             LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
             WHERE p.NR_SEQUENCIA IS NOT NULL
@@ -73,7 +73,8 @@ class ProcedimentoModel {
                     b.NM_PESSOA_FISICA,
                     u.DS_USUARIO as NM_USUARIO_COMPLETO,
                     pf.DT_NASCIMENTO,
-                    pf.IE_SEXO
+                    pf.IE_SEXO,
+                    obter_nome_mae(p.CD_PESSOA_FISICA) as NM_MAE_PACIENTE
                 FROM CPOE_PROCEDIMENTO p
                 LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
                 LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO

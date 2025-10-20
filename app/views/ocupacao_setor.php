@@ -46,7 +46,11 @@
                         </td>
                         <td class="px-4 py-2 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">
-                                <?= htmlspecialchars($paciente['PACIENTE'] ?? 'N/D') ?>
+                                <a href="index.php?controller=pacientes&action=view&id=<?= $paciente['CD_PESSOA_FISICA'] ?>" 
+                                    class="text-blue-600 hover:text-blue-900 hover:underline"
+                                    title="Ver detalhes do paciente">
+                                    <?= htmlspecialchars($paciente['PACIENTE'] ?? 'N/D') ?>
+                                </a>
                             </div>
                         </td>
                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">

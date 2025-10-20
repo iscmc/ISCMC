@@ -56,6 +56,11 @@ try {
             require_once __DIR__ . '/app/controllers/OcupacaoSetorController.php';
             $controller = new OcupacaoSetorController();
             break;
+
+        case 'pacientes':
+            require_once __DIR__ . '/app/controllers/PacienteController.php';
+            $controller = new PacienteController();
+            break;
             
         default:
             // Se não encontrou, vai para dashboard

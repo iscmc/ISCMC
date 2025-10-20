@@ -64,7 +64,7 @@ class ProcedimentoModel {
                     p.NR_SEQUENCIA,
                     p.NR_ATENDIMENTO,
                     p.CD_PESSOA_FISICA,
-                    obter_nome_pf(p.CD_PESSOA_FISICA) as NM_PACIENTE,
+                    UPPER(obter_nome_pf(p.CD_PESSOA_FISICA)) as NM_PACIENTE,
                     c.DS_PROC_EXAME as DS_PROCEDIMENTO,
                     p.DT_PREV_EXECUCAO as DT_PROCEDIMENTO,
                     p.DS_OBSERVACAO,
@@ -73,7 +73,7 @@ class ProcedimentoModel {
                     b.NM_PESSOA_FISICA,
                     u.DS_USUARIO as NM_USUARIO_COMPLETO,
                     pf.DT_NASCIMENTO,
-                    pf.IE_SEXO,
+                    Obter_Sexo_PF(pf.CD_PESSOA_FISICA, 'D') IE_SEXO,
                     obter_nome_mae(p.CD_PESSOA_FISICA) as NM_MAE_PACIENTE
                 FROM CPOE_PROCEDIMENTO p
                 LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
@@ -177,14 +177,14 @@ class ProcedimentoModel {
     private function formatRow($row) {
         // Garante que todas as chaves necessárias existam
         $defaults = [
-            'DS_PROCEDIMENTO' => 'N/A',
-            'NM_PACIENTE' => 'N/A',
-            'NM_USUARIO_COMPLETO' => 'N/A',
+            'DS_PROCEDIMENTO' => 'N/D',
+            'NM_PACIENTE' => 'N/D',
+            'NM_USUARIO_COMPLETO' => 'N/D',
             'DS_OBSERVACAO' => '',
             'DT_NASCIMENTO' => null,
-            'TP_SEXO' => 'N/A',
-            'DS_LOCAL_ATENDIMENTO' => 'N/A',
-            'DS_ESPECIALIDADE' => 'N/A'
+            'TP_SEXO' => 'N/D',
+            'DS_LOCAL_ATENDIMENTO' => 'N/D',
+            'DS_ESPECIALIDADE' => 'N/D'
         ];
         
         $row = array_merge($defaults, $row);

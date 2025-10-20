@@ -208,3 +208,16 @@ footer .badge {
 .ocupacao-gradient {
     background: linear-gradient(to bottom, #f6faffff, #dbeafe);
 }
+
+/* Extendendo o Tailwind com as cores customizadas */
+.bg-custom-danger {
+    background-color: var(--color-danger);
+}
+
+.text-custom-danger {
+    color: var(--color-danger);
+}
+
+.border-custom-danger {
+    border-color: var(--color-danger);
+}

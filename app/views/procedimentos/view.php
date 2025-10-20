@@ -45,7 +45,7 @@
                             <dl class="space-y-3">
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">Descrição:</dt>
-                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['DS_PROCEDIMENTO'] ?? 'N/A'); ?></dd>
+                                    <dd class="text-sm text-gray-900 mt-1 font-bold"><?php echo htmlspecialchars($procedimento['DS_PROCEDIMENTO'] ?? 'N/A'); ?></dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">Data do Procedimento:</dt>
@@ -69,12 +69,8 @@
                             </h3>
                             <dl class="space-y-3">
                                 <div>
-                                    <dt class="text-sm font-medium text-gray-500">Código Paciente:</dt>
-                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['CD_PACIENTE'] ?? 'N/A'); ?></dd>
-                                </div>
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Nome Paciente:</dt>
-                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['NM_PACIENTE'] ?? 'N/A'); ?></dd>
+                                    <dt class="text-sm font-medium text-gray-500">Código  e Nome Paciente:</dt>
+                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['CD_PACIENTE'] ?? 'N/A'); ?> - <?php echo htmlspecialchars($procedimento['NM_PACIENTE'] ?? 'N/A'); ?></dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">Data Nascimento:</dt>

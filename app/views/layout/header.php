@@ -13,13 +13,34 @@
  * @since    2025-09-01
  * @maindev  Sergio Figueroa
  */
+
+// Detectar módulo atual baseado na URL
+$moduloAtual = 'cpoe'; // Padrão: CPOE - escolha
+$moduloAtualTexto = 'CPOE - escolha';
+$moduloAtualIcone = 'fas fa-list';
+$moduloAtualBg = 'bg-green-600';
+
+// Verificar se estamos no módulo de medicamentos
+if (strpos($_SERVER['REQUEST_URI'], '/ISCMC/medicamentos/') !== false) {
+    $moduloAtual = 'medicamentos';
+    $moduloAtualTexto = 'Soluções e Medicamentos';
+    $moduloAtualIcone = 'fas fa-pills';
+    $moduloAtualBg = 'bg-info';
+} 
+// Verificar se estamos no módulo de procedimentos
+elseif (strpos($_SERVER['REQUEST_URI'], '/ISCMC/procedimentos/') !== false) {
+    $moduloAtual = 'procedimentos';
+    $moduloAtualTexto = 'Procedimentos';
+    $moduloAtualIcone = 'fas fa-procedures';
+    $moduloAtualBg = 'bg-primary';
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISCMC - Consulta de Procedimentos</title>
+    <title>ISCMC - Sistema de Contingencia</title>
     <link rel="icon" type="image/x-icon" href="/ISCMC/assets/images/icone-site.png">
 
     <!-- Tailwind CSS 
@@ -59,32 +80,35 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <!-- Dropdown de Procedimentos -->
                     <div class="relative group">
-                        <button class="text-white bg-primary px-3 py-2 rounded-md font-medium flex items-center space-x-2 hover:bg-primary-dark transition duration-200">
-                            <i class="fas fa-procedures"></i>
-                            <span>Procedimentos</span>
-                            <i class="fas fa-chevron-down text-xs ml-1"></i>
+                        <button class="text-white <?php echo $moduloAtualBg; ?> px-3 py-2 rounded-md font-medium flex items-center space-x-2 hover:bg-primary-dark transition duration-200">
+                            <i class="<?php echo $moduloAtualIcone; ?> "></i>
+                            <span><?php echo $moduloAtualTexto; ?></span>
+                            <i class="fas fa-chevron-down text-xs ml-1 text-white"></i>
                         </button>
                         
                         <!-- Dropdown Menu -->
                         <div class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-200">
                             <div class="py-2">
-                                <?php
-                                /*<a href="/ISCMC/nutricao/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
-                                    <i class="fas fa-apple-alt text-green-500 w-5"></i>
-                                    <span>Nutrição</span>
-                                </a>
-                                */
-                                ?>
+                                <?php if ($moduloAtual !== 'medicamentos'): ?>
                                 <a href="/ISCMC/medicamentos/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
                                     <i class="fas fa-pills text-blue-500 w-5"></i>
                                     <span>Soluções e Medicamentos</span>
                                 </a>
+                                <?php endif; ?>
+                                
+                                <?php if ($moduloAtual !== 'procedimentos'): ?>
                                 <a href="/ISCMC/procedimentos/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
                                     <i class="fas fa-procedures text-red-500 w-5"></i>
                                     <span>Procedimentos</span>
                                 </a>
+                                <?php endif; ?>
+                                
                                 <?php
                                 /*
+                                <a href="/ISCMC/nutricao/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
+                                    <i class="fas fa-apple-alt text-green-500 w-5"></i>
+                                    <span>Nutrição</span>
+                                </a>
                                 <a href="/ISCMC/gasoterapia/" class="block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center space-x-3">
                                     <i class="fas fa-wind text-cyan-500 w-5"></i>
                                     <span>Gasoterapia</span>

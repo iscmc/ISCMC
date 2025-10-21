@@ -148,7 +148,7 @@ include __DIR__ . '/../layout/header.php';
                                 <p class="text-3xl font-bold text-blue-600"><?= count($procedimentos) ?></p>
                             </div>
                             <div class="bg-blue-100 group-hover:bg-blue-200 p-4 rounded-xl transition-colors duration-200">
-                                <i class="fas fa-procedures text-blue-600 text-xl"></i>
+                                <i class="fas fa-procedures text-blue-800 text-xl"></i>
                             </div>
                         </div>
                         <div class="mt-3 flex items-center text-xs text-blue-700">
@@ -159,7 +159,7 @@ include __DIR__ . '/../layout/header.php';
                 </a>
 
                 <!-- Medicamentos -->
-                <a href="#medicamentos" class="group">
+                <a href="#medicamentos" class="group block">
                     <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 group-hover:border-yellow-300">
                         <div class="flex items-center justify-between">
                             <div>

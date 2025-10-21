@@ -110,6 +110,7 @@ class PacienteModel {
         $sql = "SELECT 
                     m.NR_SEQUENCIA,
                     m.CD_MATERIAL,
+                    a.DS_MATERIAL,
                     to_char(m.DT_ATUALIZACAO, 'dd/mm/yyyy hh24:mi') as DT_UTILIZACAO,
                     m.QT_DOSE,
                     m.DS_OBSERVACAO,
@@ -117,8 +118,10 @@ class PacienteModel {
                     to_char(m.DT_ATUALIZACAO_NREC, 'dd/mm/yyyy hh24:mi') as DT_ATUALIZACAO,
                     u.DS_USUARIO as NM_USUARIO_COMPLETO
                 FROM CPOE_MATERIAL m
+                INNER JOIN MATERIAL a ON m.CD_MATERIAL = a.CD_MATERIAL
                 LEFT JOIN USUARIO u ON m.NM_USUARIO = u.NM_USUARIO
                 WHERE m.CD_PESSOA_FISICA = :cd_pessoa_fisica
+                AND a.IE_TIPO_MATERIAL = '1'
                 ORDER BY m.DT_ATUALIZACAO DESC, m.DT_ATUALIZACAO_NREC DESC";
         
         $stmt = oci_parse($this->conn, $sql);
@@ -182,6 +185,7 @@ class PacienteModel {
         return [
             'NR_SEQUENCIA' => $row['NR_SEQUENCIA'],
             'CD_MATERIAL' => $row['CD_MATERIAL'],
+            'DS_MATERIAL' => $row['DS_MATERIAL'],
             'DT_UTILIZACAO' => $row['DT_UTILIZACAO'],
             'QT_UTILIZADA' => $row['QT_DOSE'],
             'DS_OBSERVACAO' => $row['DS_OBSERVACAO'],

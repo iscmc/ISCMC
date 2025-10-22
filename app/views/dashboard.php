@@ -143,7 +143,7 @@
                     <tr class="hover:bg-gray-100 transition duration-150">
                         <td class="px-4 py-2 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">
-                                <a href="index.php?controller=ocupacao_setor&setor=<?= $setor['CD_SETOR_ATENDIMENTO'] ?>" 
+                                <a href="<?= $_SERVER['PHP_SELF'] ?>?controller=ocupacao_setor&setor=<?= $setor['CD_SETOR_ATENDIMENTO'] ?>" 
                                 class="text-blue-600 hover:text-blue-900 hover:underline">
                                     <span class="text-sm text-gray-500"><?= $setor['CD_SETOR_ATENDIMENTO'] ?> - </span>
                                     <?= htmlspecialchars($setor['DS_SETOR_ATENDIMENTO']) ?>

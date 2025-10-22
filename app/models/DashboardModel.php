@@ -37,12 +37,11 @@ class DashboardModel {
                     nr_unidades_reservadas,
                     round(dividir((nr_unidades_ocupadas*100), (nr_unidades_setor-nr_unidades_interditadas-nr_unid_temp_ocup)),2) percentual_ocupacao
                 from ocup_ocupacao_setores_v2
-                where cd_estabelecimento_base = 89
+                where cd_estabelecimento_base = ".SessionHelper::getCurrentEstabelecimento()."
                 and cd_classif_setor in (3, 4)
                 and ie_situacao = 'A'
                 and ie_ocup_hospitalar <> 'N'
                 order by cd_classif_setor, ds_setor_atendimento";
-            
             $stmt = oci_parse($this->conn, $sql);
             
             if (!oci_execute($stmt)) {

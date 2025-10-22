@@ -52,6 +52,11 @@ try {
             $controller = new DashboardController();
             break;
 
+        case 'estabelecimento': // ADICIONE ESTE CASO
+            require_once __DIR__ . '/app/controllers/EstabelecimentoController.php';
+            $controller = new EstabelecimentoController();
+            break;
+
         case 'medicamentos':
             if (file_exists(__DIR__ . '/app/controllers/MedicamentoController.php')) {
                 require_once __DIR__ . '/app/controllers/MedicamentoController.php';

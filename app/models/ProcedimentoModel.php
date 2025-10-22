@@ -44,10 +44,11 @@ class ProcedimentoModel {
             INNER JOIN PESSOA_FISICA b ON p.CD_MEDICO_EXEC = b.CD_PESSOA_FISICA
             INNER JOIN PROC_INTERNO c ON p.NR_SEQ_PROC_INTERNO = c.nr_sequencia
             LEFT JOIN USUARIO u ON p.NM_USUARIO = u.NM_USUARIO
+            LEFT JOIN ATENDIMENTO_PACIENTE a ON p.NR_ATENDIMENTO = a.NR_ATENDIMENTO
             WHERE p.NR_SEQUENCIA IS NOT NULL
+            AND a.CD_ESTABELECIMENTO = ".SessionHelper::getCurrentEstabelecimento()."
         ) 
         WHERE rn BETWEEN :start_row AND :end_row";
-        
         $start_row = $offset + 1;
         $end_row = $offset + $limit;
         

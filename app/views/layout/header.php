@@ -14,6 +14,10 @@
  * @maindev  Sergio Figueroa
  */
 
+// Iniciar sessão caso não estiver iniciada
+require_once __DIR__ . '/../../helpers/SessionHelper.php';
+SessionHelper::startSession();
+
 // Detectar módulo atual baseado na URL
 $moduloAtual = 'cpoe'; // Padrão: CPOE - escolha
 $moduloAtualTexto = 'CPOE - escolha';
@@ -34,6 +38,14 @@ elseif (strpos($_SERVER['REQUEST_URI'], '/ISCMC/procedimentos/') !== false) {
     $moduloAtualIcone = 'fas fa-procedures';
     $moduloAtualBg = 'bg-primary';
 }
+
+// Obter dados do estabelecimento atual da sessão
+$cd_estabelecimento_atual = SessionHelper::getCurrentEstabelecimento();
+$nm_estabelecimento_atual = SessionHelper::getEstabelecimentoName();
+$sgl_estabelecimento_atual = SessionHelper::getEstabelecimentoSigla();
+
+// Os estabelecimentos serão passados pelo Controller para a view
+$estabelecimentos = $estabelecimentos ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -43,8 +55,7 @@ elseif (strpos($_SERVER['REQUEST_URI'], '/ISCMC/procedimentos/') !== false) {
     <title>ISCMC - Sistema de Contingencia</title>
     <link rel="icon" type="image/x-icon" href="/ISCMC/assets/images/icone-site.png">
 
-    <!-- Tailwind CSS 
-    <script src="https://cdn.tailwindcss.com"></script> -->
+    <!-- Tailwind CSS -->
     <link href="/ISCMC/dist/output.css" rel="stylesheet">
     <link href="/ISCMC/assets/css/tailwind.css" rel="stylesheet">
     
@@ -78,6 +89,48 @@ elseif (strpos($_SERVER['REQUEST_URI'], '/ISCMC/procedimentos/') !== false) {
 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex items-center space-x-8">
+                    <!-- Dropdown de Estabelecimentos -->
+                    <?php if (!empty($estabelecimentos)): ?>
+                    <div class="relative group">
+                        <form method="POST" action="/ISCMC/?controller=estabelecimento&action=changeEstabelecimento" class="m-0" id="formEstabelecimento">
+                            <input type="hidden" name="cd_estabelecimento" id="hiddenCdEstabelecimento">
+                            <input type="hidden" name="nm_fantasia_estab" id="hiddenNmFantasia" value="<?php echo htmlspecialchars($nm_estabelecimento_atual); ?>">
+                            <button type="button" onclick="toggleEstabelecimentoDropdown()" class="text-white bg-blue-600 px-3 py-2 rounded-md font-medium flex items-center space-x-2 hover:bg-blue-700 transition duration-200">
+                                <i class="fas fa-hospital"></i>
+                                <span id="currentEstabelecimento" class="text-sm"><?php echo htmlspecialchars($nm_estabelecimento_atual); ?></span>
+                                <i class="fas fa-chevron-down text-xs ml-1"></i>
+                            </button>
+                            
+                            <!-- Dropdown Menu Estabelecimentos -->
+                            <div id="estabelecimentoDropdown" class="absolute left-0 mt-2 w-80 bg-white rounded-md shadow-lg opacity-0 invisible transition-all duration-300 z-50 border border-gray-200 max-h-96 overflow-y-auto">
+                                <div class="py-2">
+                                    <?php foreach ($estabelecimentos as $estab): ?>
+                                        <button type="button" 
+                                                onclick="changeEstabelecimento(<?php echo $estab['CD_ESTABELECIMENTO']; ?>, '<?php echo htmlspecialchars($estab['NM_FANTASIA_ESTAB']); ?>', '<?php echo htmlspecialchars($estab['NM_SIGLA_ESTAB']); ?>')"
+                                                class="w-full text-left block px-4 py-3 text-gray-700 hover:bg-gray-100 transition duration-150 flex items-center justify-between <?php echo ($estab['CD_ESTABELECIMENTO'] == $cd_estabelecimento_atual) ? 'bg-blue-50 border-l-4 border-blue-500' : ''; ?>">
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fas fa-clinic-medical text-green-500 w-5"></i>
+                                                <div>
+                                                    <div class="text-xs"><?php echo htmlspecialchars($estab['NM_FANTASIA_ESTAB']); ?></div>
+                                                    <div class="text-xs text-gray-500">
+                                                        Cód: <?php echo $estab['CD_ESTABELECIMENTO']; ?>
+                                                        <?php if (!empty($estab['NM_SIGLA_ESTAB'])): ?>
+                                                            • <?php echo htmlspecialchars($estab['NM_SIGLA_ESTAB']); ?>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php if ($estab['CD_ESTABELECIMENTO'] == $cd_estabelecimento_atual): ?>
+                                                <i class="fas fa-check text-blue-500"></i>
+                                            <?php endif; ?>
+                                        </button>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Dropdown de Procedimentos -->
                     <div class="relative group">
                         <button class="text-white <?php echo $moduloAtualBg; ?> px-3 py-2 rounded-md font-medium flex items-center space-x-2 hover:bg-primary-dark transition duration-200">
@@ -131,18 +184,95 @@ elseif (strpos($_SERVER['REQUEST_URI'], '/ISCMC/procedimentos/') !== false) {
                         </div>
                     </div>
 
-                    <a href="/TASYBackup/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium flex items-center space-x-2">
+                    <a href="/TASYBackup/" target="_blank" class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium flex items-center space-x-2">
                         <i class="fas fa-database"></i>
                         <span>Backup</span>
                     </a>
-                    
-                    <div class="flex items-center space-x-2 text-sm text-gray-300">
-                        <i class="fas fa-database"></i>
-                        <span>Conectado ao Backup Local</span>
-                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="flex-1">
+
+<script>
+// Funções para controle do dropdown de estabelecimentos
+function toggleEstabelecimentoDropdown() {
+    const dropdown = document.getElementById('estabelecimentoDropdown');
+    const isVisible = dropdown.classList.contains('opacity-100');
+    
+    if (isVisible) {
+        dropdown.classList.remove('opacity-100', 'visible');
+        dropdown.classList.add('opacity-0', 'invisible');
+    } else {
+        dropdown.classList.remove('opacity-0', 'invisible');
+        dropdown.classList.add('opacity-100', 'visible');
+    }
+}
+
+function changeEstabelecimento(cd_estabelecimento, nm_fantasia_estab, nm_sigla_estab) {
+    // Fechar dropdown
+    toggleEstabelecimentoDropdown();
+    
+    console.log('Mudando estabelecimento:', cd_estabelecimento, nm_fantasia_estab, nm_sigla_estab);
+    
+    // Usar o formulário existente em vez de criar um novo
+    const form = document.getElementById('formEstabelecimento');
+    const inputCd = document.getElementById('hiddenCdEstabelecimento');
+    const inputNm = document.getElementById('hiddenNmFantasia');
+    
+    // Criar inputs se não existirem
+    if (!inputCd) {
+        const newInputCd = document.createElement('input');
+        newInputCd.type = 'hidden';
+        newInputCd.name = 'cd_estabelecimento';
+        newInputCd.id = 'hiddenCdEstabelecimento';
+        form.appendChild(newInputCd);
+    }
+    
+    if (!inputNm) {
+        const newInputNm = document.createElement('input');
+        newInputNm.type = 'hidden';
+        newInputNm.name = 'nm_fantasia_estab';
+        newInputNm.id = 'hiddenNmFantasia';
+        form.appendChild(newInputNm);
+    }
+    
+    // Atualizar valores
+    document.getElementById('hiddenCdEstabelecimento').value = cd_estabelecimento;
+    document.getElementById('hiddenNmFantasia').value = nm_fantasia_estab;
+    
+    // Adicionar sigla se fornecida
+    let inputSgl = document.getElementById('hiddenNmSigla');
+    if (!inputSgl && nm_sigla_estab) {
+        inputSgl = document.createElement('input');
+        inputSgl.type = 'hidden';
+        inputSgl.name = 'nm_sigla_estab';
+        inputSgl.id = 'hiddenNmSigla';
+        form.appendChild(inputSgl);
+    }
+    if (inputSgl) {
+        inputSgl.value = nm_sigla_estab;
+    }
+    
+    console.log('Submetendo formulário com:', {
+        cd_estabelecimento: document.getElementById('hiddenCdEstabelecimento').value,
+        nm_fantasia_estab: document.getElementById('hiddenNmFantasia').value,
+        nm_sigla_estab: inputSgl ? inputSgl.value : ''
+    });
+    
+    // Submeter formulário
+    form.submit();
+}
+
+// Fechar dropdown ao clicar fora
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('estabelecimentoDropdown');
+    const button = document.querySelector('button[onclick="toggleEstabelecimentoDropdown()"]');
+    
+    if (button && !button.contains(event.target) && dropdown && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('opacity-100', 'visible');
+        dropdown.classList.add('opacity-0', 'invisible');
+    }
+});
+</script>

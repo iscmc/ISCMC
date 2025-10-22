@@ -14,6 +14,8 @@
  * @maindev  Sergio Figueroa
  */
 require_once __DIR__ . '/../models/ProcedimentoModel.php';
+require_once __DIR__ . '/../models/EstabelecimentoModel.php';
+require_once __DIR__ . '/../helpers/SessionHelper.php';
 
 class ProcedimentoController {
     private $model;
@@ -24,6 +26,15 @@ class ProcedimentoController {
     
     public function index() {
         try {
+            // Buscar estabelecimentos ativos
+            $estabelecimentoModel = new EstabelecimentoModel();
+            $estabelecimentos = $estabelecimentoModel->getEstabelecimentosAtivos();
+
+            $data = [
+                'estabelecimentos' => $estabelecimentos
+                // ... outros dados
+            ];
+            
             // Paginação
             $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
             $limit = 50;

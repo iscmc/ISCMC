@@ -14,6 +14,8 @@
  * @maindev  Sergio Figueroa
  */
 require_once __DIR__ . '/../models/DashboardModel.php';
+require_once __DIR__ . '/../models/EstabelecimentoModel.php';
+require_once __DIR__ . '/../helpers/SessionHelper.php';
 
 class DashboardController {
     private $model;
@@ -24,6 +26,15 @@ class DashboardController {
     
     public function index() {
         try {
+            // Buscar estabelecimentos ativos
+            $estabelecimentoModel = new EstabelecimentoModel();
+            $estabelecimentos = $estabelecimentoModel->getEstabelecimentosAtivos();
+
+            $data = [
+                'estabelecimentos' => $estabelecimentos
+                // ... outros dados
+            ];
+
             $dadosOcupacao = $this->model->buscarOcupacaoHospitalar();
             $totais = $this->model->calcularTotaisOcupacao($dadosOcupacao);
             

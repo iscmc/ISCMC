@@ -20,6 +20,30 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// =================================================================
+// NOVA FUNCIONALIDADE: Verificação de acesso ao front-end
+// =================================================================
+
+// Carrega helper de configurações
+require_once __DIR__ . '/app/helpers/ConfigHelper.php';
+
+// Verifica se o front-end está ativo
+try {
+    if (!ConfigHelper::isFrontendActive()) {
+        // Front-end bloqueado - mostra página "Coming Soon"
+        require_once __DIR__ . '/app/views/coming-soon.php';
+        exit; // Termina execução aqui
+    }
+} catch (Exception $e) {
+    // Em caso de erro, registra mas permite o acesso (fail-open)
+    error_log("Erro na verificação de acesso: " . $e->getMessage());
+    // Continua com a execução normal
+}
+
+// =================================================================
+// CÓDIGO EXISTENTE
+// =================================================================
+
 // Roteamento básico - Suporta tanto 'controller' quanto 'page' para compatibilidade
 $action = $_GET['action'] ?? 'index';
 $id = $_GET['id'] ?? null;

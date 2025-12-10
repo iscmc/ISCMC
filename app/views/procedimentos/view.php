@@ -95,7 +95,7 @@ include __DIR__ . '/../layout/header.php';
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">Nome da mãe:</dt>
-                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars($procedimento['NM_MAE_PACIENTE'] ?? 'N/A'); ?></dd>
+                                    <dd class="text-sm text-gray-900 mt-1"><?php echo htmlspecialchars(ucwords(strtolower($procedimento['NM_MAE_PACIENTE'])) ?? 'N/A'); ?></dd>
                                 </div>
                                 <div>
                                     <dt class="text-sm font-medium text-gray-500">Sexo:</dt>
